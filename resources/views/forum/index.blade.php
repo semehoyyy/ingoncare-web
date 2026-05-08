@@ -13,17 +13,13 @@
                 <h1 class="text-3xl font-bold mb-2">Forum Diskusi</h1>
                 <p class="text-cyan-100">Berbagi pengalaman dan bertanya seputar hewan peliharaan</p>
             </div>
-            <div class="text-right">
-                <div class="text-4xl font-bold">{{ $stats['total_diskusi'] }}</div>
-                <div class="text-sm text-cyan-100">Total Diskusi</div>
-            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="w-full">
 
         {{-- Main Content --}}
-        <div class="col-span-2 space-y-6">
+        <div class="space-y-6">
 
             {{-- Filter Tabs --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-1">
@@ -200,67 +196,6 @@
             <div class="mt-6">
                 {{ $comments->links() }}
             </div>
-
-        </div>
-
-        {{-- Sidebar Kanan --}}
-        <div class="space-y-6">
-
-            {{-- Statistik --}}
-            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-sm border border-purple-100 p-6">
-                <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-                    <span class="text-2xl">📊</span>
-                    Statistik Forum
-                </h3>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Total Diskusi</span>
-                        <span class="font-bold text-xl text-purple-600">{{ $stats['total_diskusi'] }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Total Komentar</span>
-                        <span class="font-bold text-xl text-pink-600">{{ $stats['total_komentar'] }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Trending (7 hari)</span>
-                        <span class="font-bold text-xl text-orange-600">{{ $stats['trending_count'] }}</span>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Tips Berdiskusi --}}
-            <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl shadow-sm border border-cyan-100 p-6">
-                <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-                    <span class="text-2xl">💡</span>
-                    Tips Berdiskusi
-                </h3>
-                <ul class="space-y-2 text-sm text-gray-700">
-                    <li class="flex items-start gap-2">
-                        <span class="text-cyan-500">•</span>
-                        <span>Jelaskan masalah dengan detail</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-cyan-500">•</span>
-                        <span>Sertakan foto jika diperlukan</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-cyan-500">•</span>
-                        <span>Hormati pendapat pengguna lain</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-cyan-500">•</span>
-                        <span>Berikan judul yang jelas</span>
-                    </li>
-                </ul>
-            </div>
-
-            {{-- Buat Diskusi Baru --}}
-            <a href="{{ route('home') }}"
-                class="block w-full text-center py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl hover:shadow-lg transition-all">
-                ✏️ Buat Diskusi Baru
-            </a>
-
-        </div>
 
     </div>
 

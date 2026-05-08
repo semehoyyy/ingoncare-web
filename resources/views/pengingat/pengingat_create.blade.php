@@ -16,13 +16,37 @@
         @csrf
 
         {{-- NAMA HEWAN --}}
-        <div>
-            <label class="block text-gray-700 font-medium mb-1">Nama Hewan</label>
-            <input type="text" name="nama_hewan"
-                placeholder="Contoh: Milo"
-                class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-[#13CAD6] outline-none"
-                required>
+        {{-- PILIH HEWAN --}}
+<div>
+    <label class="block text-gray-700 font-medium mb-1">
+        Pilih Hewan
+    </label>
+
+    @if($pets->isEmpty())
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+            <p class="text-yellow-700 text-sm">
+                ⚠️ Belum ada hewan terdaftar.
+                <a href="{{ route('pets.create') }}" class="underline font-semibold">
+                    Tambah hewan dulu
+                </a>
+            </p>
         </div>
+    @else
+        <select name="pet_id"
+            class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-[#13CAD6] outline-none"
+            required>
+
+            <option value="">-- Pilih Hewan --</option>
+
+            @foreach($pets as $pet)
+                <option value="{{ $pet->id }}">
+                    {{ $pet->name }} - {{ $pet->species }}
+                </option>
+            @endforeach
+
+        </select>
+    @endif
+</div>
 
         {{-- JENIS PERAWATAN (INPUT TEXT) --}}
         <div>

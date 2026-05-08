@@ -6,14 +6,10 @@
 <div class="">
 
     <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-            <a href="{{ route('riwayat') }}" class="text-gray-600 hover:text-gray-800">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1 class="text-2xl font-bold">Tambah Riwayat Kesehatan</h1>
-        </div>
-        <p class="text-gray-600 text-sm ml-9">Catat hasil pemeriksaan kesehatan hewan peliharaan Anda</p>
+
+    <div class="bg-[#13CAD6] text-white p-5 rounded-xl mb-6">
+        <h1 class="text-xl font-bold">Tambah Riwayat Kesehatan</h1>
+        <p class="text-sm opacity-90">Catat hasil pemeriksaan kesehatan hewan peliharaan Anda</p>
     </div>
 
     <!-- Form -->
