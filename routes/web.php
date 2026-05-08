@@ -158,3 +158,5 @@ Route::get('/chatbot', [ChatbotController::class, 'index'])->name('chatbot.index
 Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
 Route::get('/chatbot/history', [ChatbotController::class, 'history'])->name('chatbot.history');
 Route::get('/chatbot/new', [ChatbotController::class, 'newSession'])->name('chatbot.new-session');
+Route::get('/resend-otp', [AuthController::class, 'resendOtp'])
+    ->name('resend.otp');

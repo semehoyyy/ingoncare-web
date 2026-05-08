@@ -26,6 +26,12 @@
                 <p class="text-gray-800 leading-relaxed">
                     {{ $post->content }}
                 </p>
+
+                @if($post->image)
+                <img src="{{ asset('storage/' . $post->image) }}"
+                 alt="Post image"
+                 class="mt-4 rounded-xl w-full max-h-[500px] object-cover border">
+                @endif
             </div>
         </div>
     </div>
