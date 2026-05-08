@@ -21,17 +21,20 @@
     <form action="{{ route('pets.store') }}" method="POST" enctype="multipart/form-data" class="mt-6 space-y-8">
         @csrf
 
-        <!-- Upload Foto -->
+                <!-- Upload Foto -->
         <div class="bg-white border rounded-xl p-6 shadow-sm">
             <div class="flex flex-col items-center">
-                <label class="cursor-pointer w-full">
-                    <div class="w-full border-2 border-dashed border-gray-300 rounded-xl py-10 flex flex-col items-center hover:bg-gray-50 transition">
-                        <div class="text-4xl mb-3">⬆️</div>
-                        <p class="font-semibold">Upload Foto Hewan</p>
-                        <p class="text-gray-500 text-sm">JPG, PNG maksimal 5MB</p>
-                    </div>
-                    <input type="file" name="photo" class="hidden" accept="image/*">
+                <!-- Preview Container -->
+                <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-gray-200 mb-4 flex items-center justify-center" id="previewWrapper">
+                    <img id="photoPreview" src="" class="w-full h-full object-cover hidden">
+                    <span id="photoPlaceholder" class="text-5xl">🐾</span>
+                </div>
+
+                <label class="cursor-pointer bg-gray-100 hover:bg-gray-200 px-5 py-2 rounded-lg transition text-sm font-medium">
+                    📷 Pilih Foto Hewan
+                    <input type="file" name="photo" id="photoInput" class="hidden" accept="image/*" onchange="previewPhoto(event)">
                 </label>
+                <p class="text-gray-500 text-xs mt-2">JPG, PNG maksimal 5MB</p>
             </div>
         </div>
 
@@ -127,4 +130,21 @@
 
     </form>
 </div>
+
+<script>
+function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const preview = document.getElementById('photoPreview');
+            const placeholder = document.getElementById('photoPlaceholder');
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+</script>
 @endsection
