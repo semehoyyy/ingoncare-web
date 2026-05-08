@@ -36,6 +36,12 @@ Route::post('/register', [AuthController::class, 'prosesRegister'])->name('regis
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+Route::get('/verify-otp', [AuthController::class, 'showVerifyOtp'])
+    ->name('verify.otp');
+
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])
+    ->name('verify.otp.post');
+
 // ==========================================
 // HOME/DASHBOARD (Require Authentication)
 // ==========================================

@@ -1,0 +1,31 @@
+# Laravel core
+/vendor
+/node_modules
+/public/storage
+
+# Laravel storage
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# Environment file (PENTING)
+.env
+.env.*
+!.env.example
+
+# Testing
+.phpunit.result.cache
+
+# Laravel / server config
+Homestead.json
+Homestead.yaml
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

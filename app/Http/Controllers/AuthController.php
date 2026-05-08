@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendOtpMail;
 
 class AuthController extends Controller
 {
@@ -28,12 +30,24 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->login)
-                    ->orWhere('phone', $request->login)
-                    ->first();
+            ->orWhere('phone', $request->login)
+            ->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
-            return redirect()->route('dashboard');
+
+            $otp = rand(100000, 999999);
+
+            $user->otp = $otp;
+            $user->otp_expires_at = now()->addMinutes(5);
+            $user->save();
+
+            Mail::to($user->email)->send(new SendOtpMail($otp));
+
+            session([
+                'otp_user_id' => $user->id
+            ]);
+
+            return redirect()->route('verify.otp');
         }
 
         return redirect()->route('login')->with('error', 'Email/Phone atau Password salah');
@@ -48,48 +62,48 @@ class AuthController extends Controller
     }
 
     public function prosesRegister(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'name'      => 'required|string|max:255',
-        'email'     => 'required|string|email|max:255|unique:users',
-        'phone'     => 'required|unique:users',
-        'password'  => [
-            'required',
-            'string',
-            'min:8',                    // minimal 8 karakter
-            'confirmed',
-            'regex:/[A-Z]/',            // harus ada huruf besar
-            'regex:/[0-9]/',            // harus ada angka
-            'regex:/[@$!%*#?&]/',       // karakter spesial
-        ],
-        'dob'       => 'required|date',
-    ], [
-        'password.min'       => 'Password minimal 8 karakter.',
-        'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
-        'password.confirmed' => 'Password dan Confirm Password tidak sama!',
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|string|email|max:255|unique:users',
+            'phone'     => 'required|unique:users',
+            'password'  => [
+                'required',
+                'string',
+                'min:8',                    // minimal 8 karakter
+                'confirmed',
+                'regex:/[A-Z]/',            // harus ada huruf besar
+                'regex:/[0-9]/',            // harus ada angka
+                'regex:/[@$!%*#?&]/',       // karakter spesial
+            ],
+            'dob'       => 'required|date',
+        ], [
+            'password.min'       => 'Password minimal 8 karakter.',
+            'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
+            'password.confirmed' => 'Password dan Confirm Password tidak sama!',
+        ]);
 
-    if ($validator->fails()) {
-        return redirect()->back()->withErrors($validator)->withInput();
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        User::create([
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'phone'     => $request->phone,
+            'dob'       => $request->dob,
+            'password'  => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('login')->with('success', 'Akun berhasil dibuat!');
     }
-
-    User::create([
-        'name'      => $request->name,
-        'email'     => $request->email,
-        'phone'     => $request->phone,
-        'dob'       => $request->dob,
-        'password'  => Hash::make($request->password),
-    ]);
-
-    return redirect()->route('login')->with('success', 'Akun berhasil dibuat!');
-}
 
     // ================================
     //  LOGOUT
     // ================================
     public function logout()
     {
-        auth()->logout();
+        Auth::logout();
         return redirect()->route('login');
     }
 
@@ -166,5 +180,41 @@ class AuthController extends Controller
         DB::table('password_reset_tokens')->where('email', $reset->email)->delete();
 
         return redirect()->route('login')->with('success', 'Password berhasil diperbarui.');
+    }
+    public function showVerifyOtp()
+    {
+        return view('auth.verify-otp');
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required'
+        ]);
+
+        $user = User::find(session('otp_user_id'));
+
+        if (!$user) {
+            return redirect()->route('login')
+                ->with('error', 'Session OTP tidak ditemukan.');
+        }
+
+        if (
+            $user->otp == $request->otp &&
+            now()->lt($user->otp_expires_at)
+        ) {
+
+            Auth::login($user);
+
+            $user->otp = null;
+            $user->otp_expires_at = null;
+            $user->save();
+
+            session()->forget('otp_user_id');
+
+            return redirect()->route('dashboard');
+        }
+
+        return back()->with('error', 'OTP salah atau sudah expired.');
     }
 }
