@@ -103,10 +103,6 @@
             </svg>
         </a>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 7ccf1e56b14ad6aa1b5ea04a8d3a461c385f7f83
         {{-- Bantuan & Dukungan --}}
         <a href="{{ route('settings.help') }}" 
            class="flex items-center justify-between p-5 hover:bg-cyan-50 transition border-b border-gray-100 group">
@@ -126,11 +122,8 @@
             </svg>
         </a>
 
-<<<<<<< HEAD
         {{-- Divider --}}
         <div class="border-t-4 border-gray-100"></div>
-=======
->>>>>>> 7ccf1e56b14ad6aa1b5ea04a8d3a461c385f7f83
 
         {{-- Keluar --}}
         <form action="{{ route('logout') }}" method="POST">

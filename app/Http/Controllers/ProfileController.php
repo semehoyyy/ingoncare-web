@@ -25,44 +25,59 @@ class ProfileController extends Controller
     }
 
     private function showProfile($user, $request, $isOwnProfile)
-    {
-        $tab = $request->get('tab', 'postingan');
+{
+    $tab = $request->get('tab', 'postingan');
 
-        $stats = [
-            'total_posts'   => $user->comments()->whereNull('parent_id')->count(),
-            'total_replies' => $user->comments()->whereNotNull('parent_id')->count(),
-            'total_likes'   => $user->comments()->withCount('likes')->get()->sum('likes_count'),
-        ];
+    // Ambil settings user
+    $settings = $user->setting;
 
-        $content = [];
-
-        switch ($tab) {
-            case 'postingan':
-                $content = $user->comments()
-                    ->whereNull('parent_id')
-                    ->with(['likes', 'replies', 'user'])
-                    ->latest()
-                    ->paginate(10);
-                break;
-
-            case 'balasan':
-                $content = $user->comments()
-                    ->whereNotNull('parent_id')
-                    ->with(['likes', 'replies', 'user', 'parent', 'parent.user'])
-                    ->latest()
-                    ->paginate(10);
-                break;
-
-            case 'suka':
-                $content = $user->likes()
-                    ->with(['likes', 'replies', 'user'])
-                    ->latest('comment_user_likes.created_at')
-                    ->paginate(10);
-                break;
-        }
-
-        return view('profile.index', compact('user', 'stats', 'content', 'tab', 'isOwnProfile'));
+    // Kalau profil private dan bukan pemilik profil
+    if (!$isOwnProfile && $settings && !$settings->profile_public) {
+        abort(403, 'Profil ini bersifat private.');
     }
+
+    $stats = [
+        'total_posts'   => $user->comments()->whereNull('parent_id')->count(),
+        'total_replies' => $user->comments()->whereNotNull('parent_id')->count(),
+        'total_likes'   => $user->comments()->withCount('likes')->get()->sum('likes_count'),
+    ];
+
+    $content = [];
+
+    switch ($tab) {
+        case 'postingan':
+            $content = $user->comments()
+                ->whereNull('parent_id')
+                ->with(['likes', 'replies', 'user'])
+                ->latest()
+                ->paginate(10);
+            break;
+
+        case 'balasan':
+            $content = $user->comments()
+                ->whereNotNull('parent_id')
+                ->with(['likes', 'replies', 'user', 'parent', 'parent.user'])
+                ->latest()
+                ->paginate(10);
+            break;
+
+        case 'suka':
+            $content = $user->likes()
+                ->with(['likes', 'replies', 'user'])
+                ->latest('comment_user_likes.created_at')
+                ->paginate(10);
+            break;
+    }
+
+    return view('profile.index', compact(
+        'user',
+        'stats',
+        'content',
+        'tab',
+        'isOwnProfile',
+        'settings'
+    ));
+}
 
     public function edit()
     {

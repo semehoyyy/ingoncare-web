@@ -41,4 +41,9 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function setting()
+    {
+    return $this->hasOne(\App\Models\UserSetting::class);
+    }
 }
