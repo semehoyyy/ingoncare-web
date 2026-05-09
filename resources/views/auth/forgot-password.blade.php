@@ -1,46 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Forgot Password</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Kata Sandi</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white">
 
-<div class="max-w-md mx-auto mt-10 px-5">
+<body class="bg-[#F8F8F8] min-h-screen flex items-center justify-center px-4">
 
-    <h2 class="text-2xl font-bold mb-5">Forgot Password</h2>
+    <div class="w-full max-w-xl bg-white border border-gray-200 rounded-[30px] p-10 shadow-sm">
 
-    {{-- Success Message --}}
-    @if (session('status'))
-        <p class="text-green-600 text-sm mb-3">{{ session('status') }}</p>
-    @endif
+        <h1 class="text-3xl font-bold text-center mb-10">
+            Lupa Kata Sandi
+        </h1>
 
-    {{-- Error Message --}}
-    @error('email')
-        <p class="text-red-500 text-sm mb-3">{{ $message }}</p>
-    @enderror
+        <form method="POST" action="{{ route('password.email') }}">
+            @csrf
 
-    <form action="{{ route('password.email') }}" method="POST">
-        @csrf
+            <label class="block text-lg mb-2">Email</label>
 
-        <label class="block mb-3">
-            <span class="text-gray-800 font-semibold">Email</span>
-            <input 
-                type="email" 
+            <input type="email"
                 name="email"
-                value="{{ old('email') }}"
-                class="w-full mt-2 p-3 bg-[#EAF7FF] rounded-xl"
-                placeholder="Your Email"
                 required
-            >
-        </label>
+                placeholder="Your Email"
+                class="w-full bg-blue-50 rounded-2xl px-5 py-4 mb-5 focus:outline-none focus:ring-2 focus:ring-teal-300">
 
-        <button class="w-full bg-[#33E4DB] text-white py-3 rounded-xl mt-3">
-            Send Reset Link
-        </button>
-    </form>
+            <button type="submit"
+                class="w-full bg-teal-300 hover:bg-teal-400 text-white py-4 rounded-2xl text-xl">
+                Send Reset Link
+            </button>
 
-</div>
+            <!-- Tombol Kembali -->
+            <a href="{{ url()->previous() }}"
+                class="w-full block text-center mt-4 border border-gray-300 text-gray-600 py-4 rounded-2xl hover:bg-gray-100 transition">
+                Kembali
+            </a>
+
+            @if(session('status'))
+                <p class="text-green-500 text-center mt-4">
+                    {{ session('status') }}
+                </p>
+            @endif
+
+            @error('email')
+                <p class="text-red-500 text-center mt-4">{{ $message }}</p>
+            @enderror
+
+        </form>
+
+    </div>
 
 </body>
 </html>

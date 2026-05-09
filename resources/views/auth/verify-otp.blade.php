@@ -145,7 +145,7 @@
                     <p class="mt-4 text-[#A0AAA5] text-[14px]">
                         Tidak terima kode?
 
-                        <a href="{{ route('resend.otp') }}"
+                        <a href="{{ route('login') }}"
                             class="text-[#33E4DB] font-semibold hover:underline">
 
                             Kirim ulang
