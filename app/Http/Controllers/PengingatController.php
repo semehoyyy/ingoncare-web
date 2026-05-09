@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pengingat;
+use App\Models\Pet;
 
 class PengingatController extends Controller
 {
@@ -17,31 +18,37 @@ class PengingatController extends Controller
 
     public function create()
     {
-        return view('pengingat.pengingat_create');
+        $pets = Pet::where('user_id', auth()->id())->get();
+
+        return view('pengingat.pengingat_create', compact('pets'));
     }
 
-    public function store(Request $req)
-    {
-        $req->validate([
-            'nama_hewan' => 'required|string|max:255',
-            'kategori'   => 'required|string|max:255',
-            'tanggal'    => 'required|date',
-            'waktu'      => 'required',
-            'deskripsi'  => 'nullable|string',
-        ]);
+    public function store(Request $request)
+{
+    $request->validate([
+        'pet_id' => 'required|exists:pets,id',
+        'kategori' => 'required',
+        'tanggal' => 'required',
+        'waktu' => 'required',
+    ]);
 
-        Pengingat::create([
-            'user_id'    => auth()->id(),
-            'nama_hewan' => $req->nama_hewan,
-            'kategori'   => $req->kategori,
-            'tanggal'    => $req->tanggal,
-            'waktu'      => $req->waktu,
-            'deskripsi'  => $req->deskripsi,
-            'status'     => 'aktif',
-        ]);
+    // ambil data hewan
+    $pet = Pet::findOrFail($request->pet_id);
 
-        return redirect()->route('pengingat.list')->with('success', 'Pengingat berhasil ditambahkan!');
-    }
+    Pengingat::create([
+        'user_id' => auth()->id(),
+        'pet_id' => $pet->id,
+        'nama_hewan' => $pet->name, // otomatis isi nama hewan
+        'kategori' => $request->kategori,
+        'tanggal' => $request->tanggal,
+        'waktu' => $request->waktu,
+        'deskripsi' => $request->deskripsi,
+        'status' => 'aktif',
+    ]);
+
+    return redirect()->route('pengingat.list')
+    ->with('success', 'Pengingat berhasil ditambahkan');
+}
 
     public function selesai($id)
     {

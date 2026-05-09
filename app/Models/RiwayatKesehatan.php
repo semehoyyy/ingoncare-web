@@ -12,6 +12,7 @@ class RiwayatKesehatan extends Model
     protected $fillable = [
         'user_id',
         'pet_id',
+        'nama_hewan',
         'tanggal_pemeriksaan',
         'diagnosis',
         'tindakan',
