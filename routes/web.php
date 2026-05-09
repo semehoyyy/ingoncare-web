@@ -96,7 +96,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/riwayat/{id}/edit', [RiwayatKesehatanController::class, 'edit'])->name('riwayat.edit');
     Route::put('/riwayat/{id}', [RiwayatKesehatanController::class, 'update'])->name('riwayat.update');
     Route::delete('/riwayat/{id}', [RiwayatKesehatanController::class, 'destroy'])->name('riwayat.destroy');
-
+    Route::delete('/profil/delete', [ProfileController::class, 'destroy'])
+    ->name('profile.destroy');
+    
     // PENGINGAT
     Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
     Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');

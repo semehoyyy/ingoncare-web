@@ -143,4 +143,24 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.index')->with('success', 'Password berhasil diubah!');
     }
+
+    public function destroy(Request $request)
+{
+    $user = Auth::user();
+
+    // hapus foto profil jika ada
+    if ($user->profile_photo) {
+        Storage::disk('public')->delete($user->profile_photo);
+    }
+
+    Auth::logout();
+
+    $user->delete();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/')
+        ->with('success', 'Akun berhasil dihapus');
+    }
 }
