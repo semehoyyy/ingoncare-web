@@ -1,65 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Reset Password</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white">
 
-<div class="max-w-md mx-auto mt-10 px-5">
+<body class="bg-[#F8F8F8] min-h-screen flex items-center justify-center px-4">
 
-    <h2 class="text-2xl font-bold mb-5">Reset Password</h2>
+<div class="w-full max-w-xl bg-white border rounded-[30px] p-10">
 
-    {{-- Error Messages --}}
-    @if (session('error'))
-        <p class="text-red-500 text-sm mb-3">{{ session('error') }}</p>
-    @endif
+    <h1 class="text-3xl font-bold text-center mb-10">
+        Reset Password
+    </h1>
 
-    @error('email')
-        <p class="text-red-500 text-sm mb-3">{{ $message }}</p>
-    @enderror
-
-    <form action="{{ route('password.update') }}" method="POST">
+    <form method="POST" action="{{ route('password.update') }}">
         @csrf
 
-        {{-- Hidden Token --}}
         <input type="hidden" name="token" value="{{ $token }}">
 
-        <label class="block mb-3">
-            <span class="text-gray-800 font-semibold">Email</span>
-            <input 
-                type="email" 
-                name="email"
-                value="{{ old('email') }}"
-                class="w-full mt-2 p-3 bg-[#EAF7FF] rounded-xl"
-                placeholder="Your Email"
-                required
-            >
-        </label>
+        <input type="email" name="email" placeholder="Email"
+            class="w-full mb-4 p-4 bg-blue-50 rounded-xl">
 
-        <label class="block mb-3">
-            <span class="text-gray-800 font-semibold">New Password</span>
-            <input 
-                type="password" 
-                name="password"
-                class="w-full mt-2 p-3 bg-[#EAF7FF] rounded-xl"
-                required
-            >
-        </label>
+        <input type="password" name="password" placeholder="New Password"
+            class="w-full mb-4 p-4 bg-blue-50 rounded-xl">
 
-        <label class="block mb-3">
-            <span class="text-gray-800 font-semibold">Confirm Password</span>
-            <input 
-                type="password" 
-                name="password_confirmation"
-                class="w-full mt-2 p-3 bg-[#EAF7FF] rounded-xl"
-                required
-            >
-        </label>
+        <input type="password" name="password_confirmation" placeholder="Confirm Password"
+            class="w-full mb-6 p-4 bg-blue-50 rounded-xl">
 
-        <button class="w-full bg-[#33E4DB] text-white py-3 rounded-xl mt-3">
-            Update Password
+        <button class="w-full bg-teal-300 text-white py-4 rounded-xl text-xl">
+            Reset Password
         </button>
+
     </form>
 
 </div>
