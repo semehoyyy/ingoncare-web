@@ -73,26 +73,25 @@ RiwayatKesehatan::create([
         return view('riwayat.edit', compact('riwayat', 'pets'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
-            'tanggal_pemeriksaan' => 'required|date',
-            'diagnosis' => 'required|string|max:255',
-            'tindakan' => 'required|string',
-            'dokter' => 'required|string|max:255',
-            'catatan' => 'nullable|string',
-            'jadwal_berikutnya' => 'nullable|date|after_or_equal:tanggal_pemeriksaan',
-        ]);
+   public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'tanggal_pemeriksaan' => 'required|date',
+        'diagnosis' => 'required|string|max:255',
+        'tindakan' => 'required|string',
+        'dokter' => 'required|string|max:255',
+        'catatan' => 'nullable|string',
+        'jadwal_berikutnya' => 'nullable|date|after_or_equal:tanggal_pemeriksaan',
+    ]);
 
-        RiwayatKesehatan::where('id', $id)
-            ->where('user_id', auth()->id())
-            ->update($validated);
+    RiwayatKesehatan::where('id', $id)
+        ->where('user_id', auth()->id())
+        ->update($validated);
 
-        return redirect()
-            ->route('riwayat')
-            ->with('success', 'Riwayat kesehatan berhasil diperbarui!');
-    }
+    return redirect()
+        ->route('riwayat')
+        ->with('success', 'Riwayat kesehatan berhasil diperbarui!');
+}
 
     public function destroy($id)
     {
