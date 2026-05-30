@@ -66,13 +66,21 @@ class ChatbotController extends Controller
         $petsContext = '';
         $pets = $user->pets ?? collect();
         if ($pets->isNotEmpty()) {
-            $petsContext = "Data hewan peliharaan user:\n";
+            $petsContext = "PENTING - Data hewan peliharaan milik user ini:\n";
             foreach ($pets as $pet) {
-                $petsContext .= "- {$pet->name} ({$pet->species}" .
-                    ($pet->breed ? ", {$pet->breed}" : '') .
-                    ", {$pet->gender}" .
-                    ($pet->age ? ", {$pet->age}" : '') . ")\n";
+                $petsContext .= "- Nama: {$pet->name} | Jenis: {$pet->species}" .
+                    ($pet->breed ? " ({$pet->breed})" : '') .
+                    " | Kelamin: {$pet->gender}" .
+                    ($pet->age ? " | Umur: {$pet->age}" : '') .
+                    ($pet->weight ? " | Berat: {$pet->weight}kg" : '') .
+                    ($pet->allergies ? " | Alergi: {$pet->allergies}" : '') .
+                    ($pet->health_notes ? " | Kondisi khusus: {$pet->health_notes}" : '') .
+                    "\n";
             }
+            $petsContext .= "\nJika user menyebut nama hewan di atas, LANGSUNG asumsikan itu adalah hewan peliharaan mereka. " .
+                "Jangan tanyakan lagi jenis hewannya karena data sudah tersedia di atas.\n";
+        } else {
+            $petsContext = "User belum mendaftarkan hewan peliharaan.\n";
         }
 
         // Ambil history percakapan untuk context
@@ -97,15 +105,17 @@ class ChatbotController extends Controller
             "Selalu sarankan konsultasi dokter hewan untuk masalah kesehatan serius. " .
             "Gunakan bahasa Indonesia yang ramah dan mudah dimengerti.\n\n" .
 
-            "ATURAN FORMAT YANG SANGAT WAJIB DIIKUTI, JANGAN PERNAH DILANGGAR:\n" .
-            "1. DILARANG KERAS menggunakan tanda ** (bintang ganda) untuk apapun.\n" .
-            "2. DILARANG KERAS menggunakan tanda * (bintang tunggal) untuk apapun.\n" .
-            "3. DILARANG KERAS menggunakan tanda # atau ## atau ### untuk judul.\n" .
-            "4. DILARANG menggunakan format markdown dalam bentuk apapun.\n" .
-            "5. Tulis semua jawaban dalam teks biasa tanpa simbol formatting.\n" .
-            "6. Untuk judul bagian cukup tulis teksnya diikuti titik dua, contoh: Penyebab Umum:\n" .
-            "7. Untuk daftar gunakan angka: 1. 2. 3. atau tanda strip: -\n" .
-            "8. Pisahkan paragraf dengan baris kosong agar mudah dibaca.\n\n" .
+            "FORMAT WAJIB - TIDAK BOLEH DILANGGAR:\n" .
+            "- JANGAN gunakan tanda ** atau * sama sekali\n" .
+            "- JANGAN gunakan tanda # untuk judul\n" .
+            "- Tulis dalam teks biasa saja\n" .
+            "- Boleh pakai angka (1. 2. 3.) atau strip (-) untuk daftar\n" .
+            "- Pisah paragraf dengan baris kosong\n\n" .
+
+            "ATURAN PENTING TENTANG NAMA HEWAN:\n" .
+            "- Jika user menyebut nama yang cocok dengan nama hewan peliharaan mereka, LANGSUNG gunakan data hewan tersebut\n" .
+            "- Jangan pernah bertanya 'apakah itu kucing atau anjing?' jika datanya sudah ada\n" .
+            "- Personalisasi jawaban berdasarkan data hewan yang sudah terdaftar\n\n" .
 
             "GUNAKAN PENGETAHUAN BERDASARKAN REFERENSI ILMIAH BERIKUT:\n\n" .
 
@@ -217,6 +227,9 @@ class ChatbotController extends Controller
 
         // Hapus backtick code `teks`
         $text = preg_replace('/`(.*?)`/s', '$1', $text);
+
+        // Hapus sisa asterisk/bintang yang masih ada
+        $text = preg_replace('/\*+/', '', $text);
 
         // Rapikan baris kosong berlebih
         $text = preg_replace('/\n{3,}/', "\n\n", $text);
