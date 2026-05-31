@@ -3,297 +3,410 @@
 @section('title', 'Edit Profil')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="space-y-6">
 
-    {{-- Header --}}
-    <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-            <a href="{{ route('profile.index') }}"
-                class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            </a>
+    {{-- BANNER --}}
+    <div class="text-white px-6 py-5 rounded-2xl flex items-center justify-between"
+         style="background:linear-gradient(135deg,#5E4B8B,#9F86C0);">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background:rgba(255,255,255,0.2);">
+                <i class="ti ti-user-circle text-white" style="font-size:22px;" aria-hidden="true"></i>
+            </div>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Edit Profil Saya</h1>
-                <p class="text-sm text-gray-500">Kelola Informasi Akun</p>
+                <h2 class="text-xl font-bold">Edit Profil Saya</h2>
+                <p class="text-sm" style="color:#EDE4F5;">Kelola informasi akun Anda</p>
             </div>
         </div>
+        <a href="{{ route('profile.index') }}"
+           class="w-9 h-9 rounded-full flex items-center justify-center transition"
+           style="background:rgba(255,255,255,0.2);"
+           onmouseover="this.style.background='rgba(255,255,255,0.35)'"
+           onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+            <i class="ti ti-x text-white" style="font-size:18px;" aria-hidden="true"></i>
+        </a>
     </div>
 
-    {{-- Success/Error Message --}}
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 flex items-center justify-between">
-        <span class="flex items-center gap-2">✓ {{ session('success') }}</span>
-        <button onclick="this.parentElement.remove()">✕</button>
+    <div class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium"
+         style="background:#f0fdf4; border:1.5px solid #bbf7d0; color:#15803d;">
+        <span class="flex items-center gap-2">
+            <i class="ti ti-circle-check" style="font-size:18px;"></i>
+            {{ session('success') }}
+        </span>
+        <button onclick="this.parentElement.remove()">
+            <i class="ti ti-x" style="font-size:16px;"></i>
+        </button>
     </div>
     @endif
 
-    {{-- Tab Navigation --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
-        <div class="flex border-b border-gray-200">
-            <button onclick="showTab('informasi')"
-                id="tab-informasi"
-                class="tab-button flex-1 px-6 py-4 font-semibold text-cyan-600 border-b-2 border-cyan-600 bg-cyan-50 transition">
+    {{-- TAB NAVIGATION --}}
+    <div class="bg-white rounded-2xl overflow-hidden"
+         style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+        <div class="flex" style="border-bottom:1.5px solid #EDE4F5;">
+
+            <button onclick="showTab('informasi')" id="tab-informasi"
+                    class="tab-button flex-1 px-6 py-4 text-sm font-semibold transition"
+                    style="color:#9F86C0; border-bottom:2px solid #9F86C0; background:#FDFAFF;">
                 <div class="flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                    </svg>
-                    <span>Informasi Pribadi</span>
+                    <i class="ti ti-user" style="font-size:17px;"></i>
+                    Informasi Pribadi
                 </div>
             </button>
-            <button onclick="showTab('keamanan')"
-                id="tab-keamanan"
-                class="tab-button flex-1 px-6 py-4 font-semibold text-gray-600 hover:bg-gray-50 transition">
+
+            <button onclick="showTab('keamanan')" id="tab-keamanan"
+                    class="tab-button flex-1 px-6 py-4 text-sm font-semibold transition"
+                    style="color:#9ca3af;">
                 <div class="flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                    </svg>
-                    <span>Keamanan</span>
+                    <i class="ti ti-lock" style="font-size:17px;"></i>
+                    Keamanan
                 </div>
             </button>
+
         </div>
     </div>
 
-    {{-- Tab Content: Informasi Pribadi --}}
-    <div id="content-informasi" class="tab-content">
+    {{-- TAB: INFORMASI PRIBADI --}}
+    <div id="content-informasi" class="tab-content space-y-6">
         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
             @csrf
             @method('PUT')
-
-            {{-- Hidden input for cropped image --}}
             <input type="hidden" name="profile_photo_cropped" id="croppedImageData">
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            {{-- FOTO PROFIL --}}
+            <div class="bg-white rounded-2xl p-6"
+                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                <h3 class="font-bold text-base mb-5 flex items-center gap-2" style="color:#2D1B69;">
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#EDE4F5;">
+                        <span class="text-xs font-bold" style="color:#9F86C0;">1</span>
+                    </div>
+                    Foto Profil
+                </h3>
 
-                {{-- Upload Foto Profil --}}
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="font-bold text-lg mb-4">Upload Foto Profil</h3>
-
-                    <div class="flex items-center gap-6">
-                        <div class="relative">
-                            {{-- Preview Container --}}
-                            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 bg-gray-100 flex items-center justify-center" id="avatarContainer">
-                                @if($user->profile_photo)
-                                    <img id="avatarPreview"
-                                        src="{{ asset('storage/' . $user->profile_photo) }}"
-                                        alt="Foto Profil"
-                                        class="w-full h-full object-cover">
-                                @else
-                                    <img id="avatarPreview"
-                                        src=""
-                                        alt="Foto Profil"
-                                        class="w-full h-full object-cover hidden">
-                                    <span id="avatarPlaceholder" class="text-3xl select-none">👤</span>
-                                @endif
+                <div class="flex items-center gap-6">
+                    <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0"
+                         style="border:3px solid #CDB4DB; background:#EDE4F5;">
+                        @if($user->profile_photo)
+                            <img id="avatarPreview"
+                                 src="{{ asset('storage/' . $user->profile_photo) }}"
+                                 class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center">
+                                <img id="avatarPreview" src="" class="w-full h-full object-cover hidden">
+                                <i id="avatarPlaceholder" class="ti ti-user"
+                                   style="font-size:32px; color:#CDB4DB;" aria-hidden="true"></i>
                             </div>
-
-                            {{-- Upload Button --}}
-                            <label for="profile_photo_input"
-                                class="absolute bottom-0 right-0 w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-cyan-600 transition shadow-lg">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                            </label>
-                            <input type="file"
-                                id="profile_photo_input"
-                                name="profile_photo"
-                                class="hidden"
-                                accept="image/jpeg,image/png,image/jpg"
-                                onchange="openCropModal(event)">
-                        </div>
-
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-900 mb-1">Foto Profil</p>
-                            <p class="text-sm text-gray-500">JPG, PNG maksimal 5MB</p>
-                            <p class="text-xs text-cyan-600 mt-1">Foto akan di-crop otomatis ke bentuk kotak</p>
-                        </div>
+                        @endif
                     </div>
-                </div>
-
-                {{-- Form Fields --}}
-                <div class="p-6 space-y-5">
-
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Nama Lengkap <span class="text-red-500">*</span>
+                        <label class="cursor-pointer px-5 py-2.5 rounded-xl text-sm font-semibold transition text-white inline-flex items-center gap-2"
+                               style="background:#9F86C0;"
+                               onmouseover="this.style.background='#5E4B8B'"
+                               onmouseout="this.style.background='#9F86C0'">
+                            <i class="ti ti-upload" style="font-size:14px;" aria-hidden="true"></i>
+                            Ganti Foto
+                            <input type="file" id="profile_photo_input" name="profile_photo"
+                                   class="hidden" accept="image/jpeg,image/png,image/jpg"
+                                   onchange="openCropModal(event)">
                         </label>
-                        <input type="text" name="name" value="{{ old('name', $user->name) }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                            placeholder="Nama Lengkap" required>
-                        @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        <p class="text-xs mt-2" style="color:#9ca3af;">JPG, PNG maksimal 5MB</p>
+                        <p class="text-xs mt-0.5" style="color:#9F86C0;">Foto akan di-crop ke bentuk kotak</p>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Email <span class="text-red-500">*</span>
-                        </label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                            placeholder="email@gmail.com" required>
-                        @error('email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Nomor Telepon <span class="text-red-500">*</span>
-                        </label>
-                        <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                            placeholder="08xxxxxxxxxx" required>
-                        @error('phone')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Lahir</label>
-                        <input type="date" name="dob" value="{{ old('dob', $user->dob) }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
-                        @error('dob')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat</label>
-                        <textarea name="address" rows="3"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
-                            placeholder="Contoh: Bandung, Jawa Barat">{{ old('address', $user->address) }}</textarea>
-                        @error('address')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                    </div>
-
-                    <p class="text-xs text-gray-500">* Wajib diisi</p>
-                </div>
-
-                {{-- Action Buttons --}}
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-                    <a href="{{ route('profile.index') }}"
-                        class="px-6 py-2.5 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition">
-                        Batal
-                    </a>
-                    <button type="submit"
-                        class="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transition shadow">
-                        Simpan Profil
-                    </button>
                 </div>
             </div>
+
+            {{-- INFORMASI DASAR --}}
+            <div class="bg-white rounded-2xl p-6"
+                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                <h3 class="font-bold text-base mb-5 flex items-center gap-2" style="color:#2D1B69;">
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#EDE4F5;">
+                        <span class="text-xs font-bold" style="color:#9F86C0;">2</span>
+                    </div>
+                    Informasi Pribadi
+                </h3>
+
+                <div class="space-y-5">
+
+                    <div>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
+                            Nama Lengkap <span style="color:#ef4444;">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="ti ti-user absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                                   placeholder="Nama Lengkap"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
+                        @error('name')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
+                            Email <span style="color:#ef4444;">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="ti ti-mail absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required
+                                   placeholder="email@gmail.com"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
+                        @error('email')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
+                            Nomor Telepon <span style="color:#ef4444;">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="ti ti-phone absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}" required
+                                   placeholder="08xxxxxxxxxx"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
+                        @error('phone')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">Tanggal Lahir</label>
+                        <div class="relative">
+                            <i class="ti ti-calendar absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="date" name="dob" value="{{ old('dob', $user->dob) }}"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
+                        @error('dob')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">Alamat</label>
+                        <div class="relative">
+                            <i class="ti ti-map-pin absolute left-4 top-4"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <textarea name="address" rows="3"
+                                      placeholder="Contoh: Bandung, Jawa Barat"
+                                      class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none resize-none"
+                                      style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                      onfocus="this.style.borderColor='#9F86C0'"
+                                      onblur="this.style.borderColor='#CDB4DB'">{{ old('address', $user->address) }}</textarea>
+                        </div>
+                        @error('address')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
+                    </div>
+
+                    <p class="text-xs" style="color:#9ca3af;">* Wajib diisi</p>
+                </div>
+            </div>
+
+            {{-- BUTTONS --}}
+            <div class="flex justify-end gap-3">
+                <a href="{{ route('profile.index') }}"
+                   class="px-6 py-3 rounded-xl text-sm font-semibold transition"
+                   style="border:1.5px solid #CDB4DB; color:#9F86C0;"
+                   onmouseover="this.style.background='#EDE4F5'"
+                   onmouseout="this.style.background=''">
+                    Batal
+                </a>
+                <button type="submit"
+                        class="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition"
+                        style="background:#9F86C0;"
+                        onmouseover="this.style.background='#5E4B8B'"
+                        onmouseout="this.style.background='#9F86C0'">
+                    <i class="ti ti-device-floppy" style="font-size:16px;" aria-hidden="true"></i>
+                    Simpan Profil
+                </button>
+            </div>
+
         </form>
     </div>
 
-    {{-- Tab Content: Keamanan --}}
-    <div id="content-keamanan" class="tab-content hidden">
+    {{-- TAB: KEAMANAN --}}
+    <div id="content-keamanan" class="tab-content hidden space-y-6">
         <form action="{{ route('profile.updatePassword') }}" method="POST">
             @csrf
             @method('PUT')
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="font-bold text-lg mb-2">Ubah Password</h3>
-                    <p class="text-sm text-gray-500">Pastikan password Anda aman</p>
-                </div>
+            <div class="bg-white rounded-2xl p-6"
+                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                <h3 class="font-bold text-base mb-5 flex items-center gap-2" style="color:#2D1B69;">
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#EDE4F5;">
+                        <i class="ti ti-lock" style="font-size:14px; color:#9F86C0;"></i>
+                    </div>
+                    Ubah Password
+                </h3>
 
-                <div class="p-6 space-y-5">
+                <div class="space-y-5">
+
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Password Saat Ini <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
+                            Password Saat Ini <span style="color:#ef4444;">*</span>
                         </label>
-                        <input type="password" name="current_password"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                            placeholder="Masukkan password saat ini" required>
-                        @error('current_password')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        <div class="relative">
+                            <i class="ti ti-lock absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="password" name="current_password" required
+                                   placeholder="Masukkan password saat ini"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
+                        @error('current_password')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Password Baru <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
+                            Password Baru <span style="color:#ef4444;">*</span>
                         </label>
-                        <input type="password" name="password"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                            placeholder="Masukkan password baru" required>
-                        @error('password')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                        <p class="text-xs text-gray-500 mt-1">Minimal 8 karakter</p>
+                        <div class="relative">
+                            <i class="ti ti-key absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="password" name="password" required
+                                   placeholder="Masukkan password baru"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
+                        @error('password')<p class="text-xs mt-1" style="color:#ef4444;">{{ $message }}</p>@enderror
+                        <p class="text-xs mt-1" style="color:#9ca3af;">Minimal 8 karakter</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Konfirmasi Password Baru <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
+                            Konfirmasi Password Baru <span style="color:#ef4444;">*</span>
                         </label>
-                        <input type="password" name="password_confirmation"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                            placeholder="Konfirmasi password baru" required>
+                        <div class="relative">
+                            <i class="ti ti-key absolute left-4 top-1/2 -translate-y-1/2"
+                               style="font-size:16px; color:#CDB4DB;" aria-hidden="true"></i>
+                            <input type="password" name="password_confirmation" required
+                                   placeholder="Konfirmasi password baru"
+                                   class="w-full rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none"
+                                   style="border:1.5px solid #CDB4DB; background:#FDFAFF;"
+                                   onfocus="this.style.borderColor='#9F86C0'"
+                                   onblur="this.style.borderColor='#CDB4DB'">
+                        </div>
                     </div>
-                </div>
 
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-                    <a href="{{ route('profile.index') }}"
-                        class="px-6 py-2.5 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition">
-                        Batal
-                    </a>
-                    <button type="submit"
-                        class="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transition shadow">
-                        Ubah Password
-                    </button>
                 </div>
             </div>
+
+            {{-- BUTTONS --}}
+            <div class="flex justify-end gap-3">
+                <a href="{{ route('profile.index') }}"
+                   class="px-6 py-3 rounded-xl text-sm font-semibold transition"
+                   style="border:1.5px solid #CDB4DB; color:#9F86C0;"
+                   onmouseover="this.style.background='#EDE4F5'"
+                   onmouseout="this.style.background=''">
+                    Batal
+                </a>
+                <button type="submit"
+                        class="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition"
+                        style="background:#9F86C0;"
+                        onmouseover="this.style.background='#5E4B8B'"
+                        onmouseout="this.style.background='#9F86C0'">
+                    <i class="ti ti-shield-check" style="font-size:16px;" aria-hidden="true"></i>
+                    Ubah Password
+                </button>
+            </div>
+
         </form>
     </div>
 
 </div>
 
-{{-- ============================================ --}}
 {{-- CROP MODAL --}}
-{{-- ============================================ --}}
-<div id="cropModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+<div id="cropModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4"
+     style="background:rgba(45,27,105,0.6); backdrop-filter:blur(4px);">
+    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden"
+         style="border:1.5px solid #EDE4F5; box-shadow:0 8px 40px rgba(159,134,192,0.25);">
 
         {{-- Modal Header --}}
-        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between px-5 py-4"
+             style="border-bottom:1.5px solid #EDE4F5; background:linear-gradient(135deg,#EDE4F5,#F5F0FA);">
             <div>
-                <h3 class="font-bold text-lg text-gray-900">Crop Foto Profil</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Sesuaikan posisi foto Anda</p>
+                <h3 class="font-bold text-base" style="color:#2D1B69;">Crop Foto Profil</h3>
+                <p class="text-xs mt-0.5" style="color:#9ca3af;">Sesuaikan posisi foto Anda</p>
             </div>
             <button onclick="closeCropModal()"
-                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition text-gray-600">
-                ✕
+                    class="w-8 h-8 rounded-xl flex items-center justify-center transition"
+                    style="background:#EDE4F5; color:#9F86C0;"
+                    onmouseover="this.style.background='#CDB4DB'"
+                    onmouseout="this.style.background='#EDE4F5'">
+                <i class="ti ti-x" style="font-size:16px;"></i>
             </button>
         </div>
 
         {{-- Cropper Area --}}
-        <div class="p-4 bg-gray-50">
-            <div class="relative overflow-hidden rounded-xl" style="height: 300px; background: #1a1a2e;">
+        <div class="p-4" style="background:#2D1B69;">
+            <div class="relative overflow-hidden rounded-xl" style="height:300px;">
                 <img id="cropImage" src="" alt="Crop" class="max-w-full" style="display:block;">
             </div>
         </div>
 
         {{-- Preview + Controls --}}
-        <div class="px-5 py-4 border-t border-gray-100">
+        <div class="px-5 py-4" style="border-top:1.5px solid #EDE4F5;">
             <div class="flex items-center gap-4 mb-4">
-                <div class="flex-shrink-0">
-                    <p class="text-xs text-gray-500 mb-1 text-center">Preview</p>
-                    <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-cyan-400 bg-gray-100">
+                <div class="flex-shrink-0 text-center">
+                    <p class="text-xs mb-1" style="color:#9ca3af;">Preview</p>
+                    <div class="w-16 h-16 rounded-full overflow-hidden"
+                         style="border:2px solid #9F86C0; background:#EDE4F5;">
                         <img id="cropPreview" src="" class="w-full h-full object-cover" style="display:none;">
-                        <div id="cropPreviewPlaceholder" class="w-full h-full flex items-center justify-center text-gray-300 text-2xl">👤</div>
+                        <div id="cropPreviewPlaceholder" class="w-full h-full flex items-center justify-center">
+                            <i class="ti ti-user" style="font-size:24px; color:#CDB4DB;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="flex-1 space-y-2">
-                    <div class="flex gap-2">
+                    <div class="grid grid-cols-4 gap-2">
                         <button type="button" onclick="cropperInstance.zoom(0.1)"
-                            class="flex-1 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition font-medium">
-                            🔍+
+                                class="py-2 text-sm rounded-xl font-medium transition"
+                                style="background:#EDE4F5; color:#9F86C0;"
+                                onmouseover="this.style.background='#CDB4DB'"
+                                onmouseout="this.style.background='#EDE4F5'">
+                            <i class="ti ti-zoom-in" style="font-size:15px;"></i>
                         </button>
                         <button type="button" onclick="cropperInstance.zoom(-0.1)"
-                            class="flex-1 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition font-medium">
-                            🔍-
+                                class="py-2 text-sm rounded-xl font-medium transition"
+                                style="background:#EDE4F5; color:#9F86C0;"
+                                onmouseover="this.style.background='#CDB4DB'"
+                                onmouseout="this.style.background='#EDE4F5'">
+                            <i class="ti ti-zoom-out" style="font-size:15px;"></i>
                         </button>
                         <button type="button" onclick="cropperInstance.rotate(-45)"
-                            class="flex-1 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition font-medium">
-                            ↺
+                                class="py-2 text-sm rounded-xl font-medium transition"
+                                style="background:#EDE4F5; color:#9F86C0;"
+                                onmouseover="this.style.background='#CDB4DB'"
+                                onmouseout="this.style.background='#EDE4F5'">
+                            <i class="ti ti-rotate" style="font-size:15px;"></i>
                         </button>
                         <button type="button" onclick="cropperInstance.rotate(45)"
-                            class="flex-1 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition font-medium">
-                            ↻
+                                class="py-2 text-sm rounded-xl font-medium transition"
+                                style="background:#EDE4F5; color:#9F86C0;"
+                                onmouseover="this.style.background='#CDB4DB'"
+                                onmouseout="this.style.background='#EDE4F5'">
+                            <i class="ti ti-rotate-clockwise" style="font-size:15px;"></i>
                         </button>
                     </div>
                     <button type="button" onclick="cropperInstance.reset()"
-                        class="w-full py-2 text-xs text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                            class="w-full py-2 text-xs rounded-xl transition"
+                            style="background:#F5F0FA; color:#9ca3af;"
+                            onmouseover="this.style.background='#EDE4F5'"
+                            onmouseout="this.style.background='#F5F0FA'">
                         Reset Posisi
                     </button>
                 </div>
@@ -301,11 +414,17 @@
 
             <div class="flex gap-3">
                 <button type="button" onclick="closeCropModal()"
-                    class="flex-1 py-3 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition">
+                        class="flex-1 py-3 rounded-xl text-sm font-semibold transition"
+                        style="border:1.5px solid #CDB4DB; color:#9F86C0;"
+                        onmouseover="this.style.background='#EDE4F5'"
+                        onmouseout="this.style.background=''">
                     Batal
                 </button>
                 <button type="button" onclick="applyCrop()"
-                    class="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transition shadow">
+                        class="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition"
+                        style="background:#9F86C0;"
+                        onmouseover="this.style.background='#5E4B8B'"
+                        onmouseout="this.style.background='#9F86C0'">
                     Gunakan Foto Ini
                 </button>
             </div>
@@ -313,210 +432,114 @@
     </div>
 </div>
 
-{{-- Cropper.js CDN --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
 <script>
 let cropperInstance = null;
 
-// ===== TAB SWITCHING =====
 function showTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('text-cyan-600', 'border-b-2', 'border-cyan-600', 'bg-cyan-50');
-        btn.classList.add('text-gray-600');
+        btn.style.color = '#9ca3af';
+        btn.style.borderBottom = '';
+        btn.style.background = '';
     });
-
     document.getElementById('content-' + tabName).classList.remove('hidden');
     const activeBtn = document.getElementById('tab-' + tabName);
-    activeBtn.classList.add('text-cyan-600', 'border-b-2', 'border-cyan-600', 'bg-cyan-50');
-    activeBtn.classList.remove('text-gray-600');
+    activeBtn.style.color = '#9F86C0';
+    activeBtn.style.borderBottom = '2px solid #9F86C0';
+    activeBtn.style.background = '#FDFAFF';
 }
 
-// ===== CROP MODAL =====
 function openCropModal(event) {
     const file = event.target.files[0];
     if (!file) return;
-
-    // Validate size (5MB)
     if (file.size > 5 * 1024 * 1024) {
         alert('Ukuran file terlalu besar! Maksimal 5MB.');
         event.target.value = '';
         return;
     }
-
     const reader = new FileReader();
     reader.onload = function(e) {
         const cropImage = document.getElementById('cropImage');
         cropImage.src = e.target.result;
-
-        // Show modal
         document.getElementById('cropModal').classList.remove('hidden');
-
-        // Destroy existing cropper
-        if (cropperInstance) {
-            cropperInstance.destroy();
-            cropperInstance = null;
-        }
-
-        // Reset preview
+        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
         document.getElementById('cropPreview').style.display = 'none';
         document.getElementById('cropPreviewPlaceholder').style.display = 'flex';
-
-        // Init cropper after image loads
         cropImage.onload = function() {
             cropperInstance = new Cropper(cropImage, {
-                aspectRatio: 1 / 1,
+                aspectRatio: 1,
                 viewMode: 1,
                 dragMode: 'move',
                 autoCropArea: 0.8,
-                restore: false,
                 guides: true,
                 center: true,
                 highlight: false,
                 cropBoxMovable: true,
                 cropBoxResizable: true,
                 toggleDragModeOnDblclick: false,
-                crop(event) {
-                    // Update live preview
+                crop() {
                     const canvas = cropperInstance.getCroppedCanvas({ width: 200, height: 200 });
                     if (canvas) {
-                        const previewEl = document.getElementById('cropPreview');
-                        previewEl.src = canvas.toDataURL('image/jpeg', 0.9);
-                        previewEl.style.display = 'block';
+                        const prev = document.getElementById('cropPreview');
+                        prev.src = canvas.toDataURL('image/jpeg', 0.9);
+                        prev.style.display = 'block';
                         document.getElementById('cropPreviewPlaceholder').style.display = 'none';
                     }
                 }
             });
         };
-
-        // If image already loaded
-        if (cropImage.complete) {
-            cropImage.onload();
-        }
+        if (cropImage.complete) cropImage.onload();
     };
-
     reader.readAsDataURL(file);
 }
 
 function closeCropModal() {
     document.getElementById('cropModal').classList.add('hidden');
-    if (cropperInstance) {
-        cropperInstance.destroy();
-        cropperInstance = null;
-    }
-    // Reset file input so same file can be re-selected
+    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
     document.getElementById('profile_photo_input').value = '';
 }
 
 function applyCrop() {
     if (!cropperInstance) return;
-
-    const canvas = cropperInstance.getCroppedCanvas({
-        width: 400,
-        height: 400,
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high',
-    });
-
-    if (!canvas) {
-        alert('Gagal memproses foto. Coba lagi.');
-        return;
-    }
-
+    const canvas = cropperInstance.getCroppedCanvas({ width: 400, height: 400, imageSmoothingQuality: 'high' });
+    if (!canvas) { alert('Gagal memproses foto. Coba lagi.'); return; }
     const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
-
-    // Store in hidden input for server
     document.getElementById('croppedImageData').value = croppedDataUrl;
-
-    // Update avatar preview on page
-    updateAllAvatars(croppedDataUrl);
-
-    // Close modal
+    const prev = document.getElementById('avatarPreview');
+    const placeholder = document.getElementById('avatarPlaceholder');
+    prev.src = croppedDataUrl;
+    prev.classList.remove('hidden');
+    if (placeholder) placeholder.style.display = 'none';
     document.getElementById('cropModal').classList.add('hidden');
-    if (cropperInstance) {
-        cropperInstance.destroy();
-        cropperInstance = null;
-    }
-
-    // Convert dataURL to File & replace file input
-    dataURLtoFileInput(croppedDataUrl, 'profile_photo_input', 'profile_cropped.jpg');
+    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+    document.getElementById('profile_photo_input').removeAttribute('name');
 }
 
-function dataURLtoFileInput(dataUrl, inputId, filename) {
-    // We'll send as base64 via hidden input instead
-    // The file input stays empty, server reads croppedImageData hidden field
-    document.getElementById(inputId).removeAttribute('name');
-}
-
-// ===== UPDATE ALL AVATARS ON PAGE =====
-function updateAllAvatars(src) {
-    // Edit page preview
-    const avatarPreview = document.getElementById('avatarPreview');
-    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-
-    if (avatarPreview) {
-        avatarPreview.src = src;
-        avatarPreview.classList.remove('hidden');
-    }
-    if (avatarPlaceholder) {
-        avatarPlaceholder.style.display = 'none';
-    }
-
-    // Header avatars (in navbar)
-    document.querySelectorAll('#profileButton img, header img.rounded-full').forEach(img => {
-        img.src = src;
-    });
-
-    // Any other avatar on page
-    document.querySelectorAll('[data-profile-photo]').forEach(el => {
-        if (el.tagName === 'IMG') el.src = src;
-    });
-}
-
-// ===== HANDLE FORM SUBMIT (convert base64 to file if needed) =====
 document.getElementById('profileForm').addEventListener('submit', function(e) {
     const croppedData = document.getElementById('croppedImageData').value;
-    if (!croppedData) return; // No crop done, submit normally
-
+    if (!croppedData) return;
     e.preventDefault();
-
-    // Convert base64 to Blob and append to FormData
     const form = this;
     const base64 = croppedData.split(',')[1];
     const byteCharacters = atob(base64);
     const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'image/jpeg' });
-
+    for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
+    const blob = new Blob([new Uint8Array(byteNumbers)], { type: 'image/jpeg' });
     const formData = new FormData(form);
     formData.delete('profile_photo_cropped');
-    formData.delete('profile_photo'); // remove empty file input
+    formData.delete('profile_photo');
     formData.append('profile_photo', blob, 'profile_cropped.jpg');
-
     fetch(form.action, {
         method: 'POST',
         body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json, text/html'
-        }
-    }).then(response => {
-        if (response.redirected) {
-            window.location.href = response.url;
-        } else {
-            window.location.reload();
-        }
-    }).catch(() => {
-        form.submit(); // fallback
-    });
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    }).then(r => { if (r.redirected) window.location.href = r.url; else window.location.reload(); })
+      .catch(() => form.submit());
 });
 
-// Close modal on backdrop click
 document.getElementById('cropModal').addEventListener('click', function(e) {
     if (e.target === this) closeCropModal();
 });
