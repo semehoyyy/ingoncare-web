@@ -10,11 +10,17 @@
 
 <body style="background: linear-gradient(135deg, #EDE4F5 0%, #CDB4DB 100%); min-height:100vh;" class="flex flex-col items-center justify-center">
 
-    <img src="/img/logo.png" alt="IngonCare logo" class="w-48 mb-6">
+    <a href="{{ route('welcome') }}">
+        <img
+            src="{{ asset('img/logo baru.png') }}"
+            alt="IngonCare Logo"
+            class="w-80 md:w-[300px] mb-6 mx-auto hover:scale-105 transition duration-300 cursor-pointer"
+        >
+    </a>
 
     <p class="text-center max-w-xs mb-10 text-base leading-relaxed" style="color:#5E4B8B;">
-        Perawatan hewan yang lebih sederhana.<br>
-        Agar mereka tetap sehat dan nyaman.
+        Perawatan hewan yang lebih sederhana<br>
+        Agar mereka tetap sehat dan nyaman
     </p>
 
     <a href="{{ route('login') }}"

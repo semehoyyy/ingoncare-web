@@ -10,20 +10,19 @@
 
 <body style="background:#F5F0FA; min-height:100vh;" class="py-10 px-4 relative overflow-x-hidden">
 
-    <!-- LOGO -->
-    <a href="{{ route('welcome') }}" class="absolute top-4 left-4 z-50">
-        <img src="/img/header.png" alt="logo" class="w-20 cursor-pointer hover:scale-105 transition">
-    </a>
-
-    <!-- CARD -->
+        <!-- CARD -->
     <div class="w-full max-w-xl mx-auto bg-white rounded-3xl p-8 md:p-10" style="border:1.5px solid #EDE4F5; box-shadow:0 8px 32px rgba(159,134,192,0.12);">
 
-        <!-- ICON -->
+        <!-- LOGO -->
         <div class="flex justify-center mb-8">
-            <div class="w-20 h-20 rounded-3xl flex items-center justify-center" style="background:#9F86C0;">
-                <i class="ti ti-paw text-white" style="font-size:32px;" aria-hidden="true"></i>
-            </div>
-        </div>
+        <a href="{{ route('welcome') }}">
+            <img
+                src="{{ asset('img/logo baru.png') }}"
+                alt="IngonCare Logo"
+                class="h-28 md:h-36 hover:scale-105 transition duration-300 cursor-pointer"
+            >
+        </a>
+    </div>
 
         <!-- TAB -->
         <div class="flex rounded-2xl overflow-hidden mb-8" style="border:1.5px solid #EDE4F5;">
