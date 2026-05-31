@@ -5,57 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    {{-- ICON --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 </head>
 
-<body class="bg-[#F8F8F8] min-h-screen flex items-center justify-center px-4 relative">
+<body style="background:#F5F0FA; min-height:100vh;" class="flex items-center justify-center px-4 relative">
 
-    <!-- LOGO KIRI ATAS -->
+    <!-- LOGO -->
     <a href="{{ route('welcome') }}" class="absolute top-4 left-4 z-50">
-        <img src="/img/header.png" alt="logo"
-            class="w-20 cursor-pointer hover:scale-105 transition">
+        <img src="/img/header.png" alt="logo" class="w-20 cursor-pointer hover:scale-105 transition">
     </a>
 
     <!-- CARD -->
-    <div class="w-full max-w-xl bg-white border border-gray-300 rounded-[35px] p-8 md:p-10 shadow-sm">
+    <div class="w-full max-w-xl bg-white rounded-3xl p-8 md:p-10" style="border:1.5px solid #EDE4F5; box-shadow:0 8px 32px rgba(159,134,192,0.12);">
 
         <!-- ICON -->
         <div class="flex justify-center mb-8">
-            <div class="w-20 h-20 bg-[#8DE7E0] rounded-3xl flex items-center justify-center">
-                <i class="fa-solid fa-paw text-white text-3xl"></i>
+            <div class="w-20 h-20 rounded-3xl flex items-center justify-center" style="background:#9F86C0;">
+                <i class="ti ti-paw text-white" style="font-size:32px;" aria-hidden="true"></i>
             </div>
         </div>
 
         <!-- TAB -->
-        <div class="flex border border-gray-300 rounded-2xl overflow-hidden mb-10">
+        <div class="flex rounded-2xl overflow-hidden mb-8" style="border:1.5px solid #EDE4F5;">
             <a href="{{ route('login') }}"
-                class="w-1/2 py-3 text-center bg-[#F2F1EC] text-black text-2xl font-medium">
+               class="w-1/2 py-3 text-center text-lg font-medium transition"
+               style="background:#EDE4F5; color:#5E4B8B;">
                 Masuk
             </a>
-
             <a href="{{ route('register') }}"
-                class="w-1/2 py-3 text-center bg-[#F2F1EC] border-l border-gray-300 text-black text-2xl font-medium">
+               class="w-1/2 py-3 text-center text-lg font-medium transition"
+               style="color:#9ca3af; border-left:1.5px solid #EDE4F5;"
+               onmouseover="this.style.background='#F5F0FA'"
+               onmouseout="this.style.background=''">
                 Daftar
             </a>
         </div>
 
         <!-- TITLE -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-black mb-2">
-                Selamat datang kembali
-            </h1>
-
-            <p class="text-gray-600 text-lg">
-                Masuk ke akun IngonCare Anda
-            </p>
-        </div>
-
-        <!-- GARIS -->
-        <div class="flex items-center gap-4 mb-8">
-            <div class="flex-1 h-px bg-gray-300"></div>
-            <div class="flex-1 h-px bg-gray-300"></div>
+            <h1 class="text-3xl font-bold mb-2" style="color:#2D1B69;">Selamat datang kembali</h1>
+            <p style="color:#9ca3af;">Masuk ke akun IngonCare Anda</p>
         </div>
 
         <!-- FORM -->
@@ -64,62 +53,58 @@
 
             <!-- EMAIL -->
             <div class="mb-5">
-                <label class="block text-sm font-semibold tracking-wide text-gray-800 mb-2 uppercase">
+                <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
                     Email atau Nomor Telepon
                 </label>
-
                 <div class="relative">
-                    <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
+                    <i class="ti ti-mail absolute left-4 top-1/2 -translate-y-1/2" style="font-size:18px; color:#CDB4DB;" aria-hidden="true"></i>
                     <input type="text" name="login"
                         placeholder="email@gmail.com"
                         value="{{ old('login') }}"
-                        class="w-full border border-gray-300 rounded-xl py-4 pl-12 pr-4 text-lg focus:outline-none focus:ring-2 focus:ring-[#8DE7E0]">
+                        class="w-full rounded-xl py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2"
+                        style="border:1.5px solid #CDB4DB; focus-ring-color:#9F86C0; background:#FDFAFF;">
                 </div>
             </div>
 
             <!-- PASSWORD -->
             <div class="mb-2">
-                <label class="block text-sm font-semibold tracking-wide text-gray-800 mb-2 uppercase">
+                <label class="block text-xs font-semibold tracking-wide mb-2 uppercase" style="color:#5E4B8B;">
                     Kata Sandi
                 </label>
-
                 <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
+                    <i class="ti ti-lock absolute left-4 top-1/2 -translate-y-1/2" style="font-size:18px; color:#CDB4DB;" aria-hidden="true"></i>
                     <input type="password" name="password"
                         placeholder="••••••••"
-                        class="w-full border border-gray-300 rounded-xl py-4 pl-12 pr-4 text-lg focus:outline-none focus:ring-2 focus:ring-[#8DE7E0]">
+                        class="w-full rounded-xl py-4 pl-12 pr-4 text-base focus:outline-none focus:ring-2"
+                        style="border:1.5px solid #CDB4DB; background:#FDFAFF;">
                 </div>
             </div>
 
-            <!-- ERROR -->
             @if(session('error'))
-                <p class="text-sm text-red-500 mt-2">
-                    {{ session('error') }}
-                </p>
+                <p class="text-sm text-red-500 mt-2">{{ session('error') }}</p>
             @endif
 
             <!-- LUPA PASSWORD -->
             <div class="text-right mt-3">
                 <a href="{{ route('password.request') }}"
-                    class="text-[#8DE7E0] text-base hover:underline">
+                   class="text-sm hover:underline" style="color:#9F86C0;">
                     Lupa kata sandi?
                 </a>
             </div>
 
             <!-- BUTTON -->
             <button type="submit"
-                class="w-full mt-6 border border-gray-300 rounded-xl py-4 text-2xl font-medium hover:bg-[#8DE7E0] hover:text-white transition">
+                class="w-full mt-6 rounded-xl py-4 text-xl font-semibold text-white transition"
+                style="background:#9F86C0;"
+                onmouseover="this.style.background='#5E4B8B'"
+                onmouseout="this.style.background='#9F86C0'">
                 Masuk
             </button>
         </form>
 
-        <!-- REGISTER -->
-        <p class="text-center text-gray-600 mt-6 text-lg">
+        <p class="text-center mt-6" style="color:#9ca3af;">
             Belum punya akun?
-            <a href="{{ route('register') }}"
-                class="text-[#8DE7E0] font-semibold hover:underline">
+            <a href="{{ route('register') }}" class="font-semibold hover:underline" style="color:#9F86C0;">
                 Daftar sekarang
             </a>
         </p>
