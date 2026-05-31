@@ -3,104 +3,144 @@
 @section('title', 'Pengingat')
 
 @section('content')
-<div class="flex justify-between items-center mb-8">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-800">Pengingat Perawatan</h1>
-        <p class="text-gray-500 text-sm">Kelola jadwal perawatan hewan peliharaan Anda</p>
+<div>
+
+    {{-- Header --}}
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-2xl font-bold" style="color:#2D1B69;">Pengingat Perawatan</h1>
+            <p class="text-sm mt-1" style="color:#9ca3af;">Kelola jadwal perawatan hewan peliharaan Anda</p>
+        </div>
+        <a href="{{ route('pengingat.create') }}">
+            <button class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition"
+                style="background:#9F86C0;"
+                onmouseover="this.style.background='#5E4B8B'"
+                onmouseout="this.style.background='#9F86C0'">
+                <i class="ti ti-plus" style="font-size:16px;" aria-hidden="true"></i>
+                Tambah Pengingat
+            </button>
+        </a>
     </div>
 
-    <a href="{{ route('pengingat.create') }}"
-       class="px-4 py-2 bg-[#13CAD6] text-white rounded-xl shadow hover:bg-[#11b4bf] transition flex items-center gap-2">
-        <span class="text-lg font-bold">+</span> Tambah Pengingat
-    </a>
-</div>
+    {{-- PENGINGAT AKTIF --}}
+    <div class="bg-white rounded-2xl overflow-hidden mb-6" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+        <div class="p-4 flex items-center gap-2" style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+            <i class="ti ti-bell-ringing" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+            <h2 class="font-bold" style="color:#5E4B8B;">Pengingat Aktif ({{ count($aktif) }})</h2>
+        </div>
 
-{{-- PENGINGAT AKTIF --}}
-<div class="bg-white rounded-xl shadow p-6 mb-6">
-    <h2 class="font-semibold text-gray-700 mb-4">Pengingat Aktif ({{ count($aktif) }})</h2>
-
-    @foreach ($aktif as $item)
-        <div class="p-4 border rounded-xl mb-3 hover:bg-gray-50 transition flex justify-between items-center">
-            <div>
-                <h3 class="text-lg font-semibold">{{ $item->nama_hewan }}</h3>
-
-                <span class="text-xs bg-[#E6F9FF] text-[#13CAD6] px-2 py-1 rounded-full">
-                    {{ $item->kategori }}
-                </span>
-
-                <div class="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                    <div class="flex items-center gap-2">
-                        📅 {{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}
+        <div class="p-4 space-y-3">
+            @forelse ($aktif as $item)
+            <div class="p-4 rounded-xl flex justify-between items-start transition"
+                style="border:1.5px solid #EDE4F5;"
+                onmouseover="this.style.background='#FDFAFF'"
+                onmouseout="this.style.background=''">
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-bold" style="color:#2D1B69;">{{ $item->nama_hewan }}</h3>
+                    <span class="inline-block text-xs px-2 py-0.5 rounded-full mt-1 font-medium"
+                        style="background:#EDE4F5; color:#9F86C0;">
+                        {{ $item->kategori }}
+                    </span>
+                    <div class="flex items-center gap-4 mt-2 text-sm" style="color:#9ca3af;">
+                        <span class="flex items-center gap-1">
+                            <i class="ti ti-calendar" style="font-size:14px; color:#9F86C0;" aria-hidden="true"></i>
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <i class="ti ti-clock" style="font-size:14px; color:#9F86C0;" aria-hidden="true"></i>
+                            {{ $item->waktu }}
+                        </span>
                     </div>
+                    @if($item->deskripsi)
+                        <p class="text-sm mt-1" style="color:#9ca3af;">{{ $item->deskripsi }}</p>
+                    @endif
+                </div>
 
-                    <div class="flex items-center gap-2">
-                        ⏰ {{ $item->waktu }}
+                <div class="flex items-center gap-2 ml-4 flex-shrink-0">
+                    <form action="{{ route('pengingat.selesai', $item->id) }}" method="POST">
+                        @csrf
+                        <button class="w-9 h-9 rounded-lg flex items-center justify-center transition"
+                            style="background:#EDE4F5;"
+                            onmouseover="this.style.background='#9F86C0'; this.querySelector('i').style.color='white'"
+                            onmouseout="this.style.background='#EDE4F5'; this.querySelector('i').style.color='#9F86C0'"
+                            title="Tandai selesai">
+                            <i class="ti ti-check" style="font-size:16px; color:#9F86C0;" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                    <form action="{{ route('pengingat.delete', $item->id) }}" method="POST">
+                        @csrf @method('DELETE')
+                        <button class="w-9 h-9 rounded-lg flex items-center justify-center transition"
+                            style="background:#fef2f2;"
+                            onmouseover="this.style.background='#ef4444'; this.querySelector('i').style.color='white'"
+                            onmouseout="this.style.background='#fef2f2'; this.querySelector('i').style.color='#ef4444'"
+                            title="Hapus">
+                            <i class="ti ti-trash" style="font-size:16px; color:#ef4444;" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-8">
+                <i class="ti ti-bell-off" style="font-size:36px; color:#CDB4DB;" aria-hidden="true"></i>
+                <p class="mt-3 text-sm" style="color:#9ca3af;">Tidak ada pengingat aktif</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- RIWAYAT SELESAI --}}
+    <div class="bg-white rounded-2xl overflow-hidden" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+        <div class="p-4 flex items-center gap-2" style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+            <i class="ti ti-circle-check" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+            <h2 class="font-bold" style="color:#5E4B8B;">Riwayat Selesai ({{ count($selesai) }})</h2>
+        </div>
+
+        <div class="p-4 space-y-3">
+            @forelse ($selesai as $item)
+            <div class="p-4 rounded-xl flex justify-between items-start"
+                style="border:1.5px solid #EDE4F5; opacity:0.75;">
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-bold" style="color:#2D1B69;">{{ $item->nama_hewan }}</h3>
+                    <div class="flex items-center gap-2 mt-1 flex-wrap">
+                        <span class="inline-block text-xs px-2 py-0.5 rounded-full font-medium"
+                            style="background:#EDE4F5; color:#9F86C0;">
+                            {{ $item->kategori }}
+                        </span>
+                        <span class="inline-block text-xs px-2 py-0.5 rounded-full font-medium"
+                            style="background:#d1fae5; color:#059669;">
+                            Selesai
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-4 mt-2 text-sm" style="color:#9ca3af;">
+                        <span class="flex items-center gap-1">
+                            <i class="ti ti-calendar" style="font-size:14px;" aria-hidden="true"></i>
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <i class="ti ti-clock" style="font-size:14px;" aria-hidden="true"></i>
+                            {{ $item->waktu }}
+                        </span>
                     </div>
                 </div>
 
-                <p class="text-gray-500 text-sm mt-1">{{ $item->deskripsi }}</p>
-            </div>
-
-            <div class="flex items-center gap-3">
-
-                {{-- Tandai selesai --}}
-                <form action="{{ route('pengingat.selesai', $item->id) }}" method="POST">
-                    @csrf
-                    <button class="bg-green-200 text-green-700 p-2 rounded-lg hover:bg-green-300 transition">
-                        ✔
-                    </button>
-                </form>
-
-                {{-- Hapus --}}
-                <form action="{{ route('pengingat.delete', $item->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button class="bg-red-200 text-red-700 p-2 rounded-lg hover:bg-red-300 transition">
-                        🗑
+                <form action="{{ route('pengingat.delete', $item->id) }}" method="POST" class="ml-4 flex-shrink-0">
+                    @csrf @method('DELETE')
+                    <button class="w-9 h-9 rounded-lg flex items-center justify-center transition"
+                        style="background:#fef2f2;"
+                        onmouseover="this.style.background='#ef4444'; this.querySelector('i').style.color='white'"
+                        onmouseout="this.style.background='#fef2f2'; this.querySelector('i').style.color='#ef4444'">
+                        <i class="ti ti-trash" style="font-size:16px; color:#ef4444;" aria-hidden="true"></i>
                     </button>
                 </form>
             </div>
-        </div>
-    @endforeach
-</div>
-
-{{-- RIWAYAT SELESAI --}}
-<div class="bg-white rounded-xl shadow p-6 mb-6">
-    <h2 class="font-semibold text-gray-700 mb-4">Riwayat Selesai ({{ count($selesai) }})</h2>
-
-    @foreach ($selesai as $item)
-        <div class="p-4 border rounded-xl mb-3 hover:bg-gray-50 transition flex justify-between items-center">
-            <div>
-                <h3 class="text-lg font-semibold">{{ $item->nama_hewan }}</h3>
-
-                <span class="text-xs bg-[#DFF6DD] text-[#3A7A2A] px-2 py-1 rounded-full">
-                    {{ $item->kategori }}
-                </span>
-
-                <span class="text-xs bg-[#E8F5E9] text-green-700 px-2 py-1 rounded-full">
-                    Selesai
-                </span>
-
-                <div class="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                    <div class="flex items-center gap-2">
-                        📅 {{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        ⏰ {{ $item->waktu }}
-                    </div>
-                </div>
+            @empty
+            <div class="text-center py-8">
+                <i class="ti ti-checks" style="font-size:36px; color:#CDB4DB;" aria-hidden="true"></i>
+                <p class="mt-3 text-sm" style="color:#9ca3af;">Belum ada riwayat selesai</p>
             </div>
-
-            <form action="{{ route('pengingat.delete', $item->id) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button class="bg-red-200 text-red-700 p-2 rounded-lg hover:bg-red-300 transition">
-                    🗑
-                </button>
-            </form>
+            @endforelse
         </div>
-    @endforeach
-</div>
+    </div>
 
+</div>
 @endsection
