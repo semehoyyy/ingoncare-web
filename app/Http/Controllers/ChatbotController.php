@@ -62,6 +62,45 @@ class ChatbotController extends Controller
             'message'    => $userMsg,
         ]);
 
+        // FILTER KEYWORD KESEHATAN MANUSIA
+
+        $humanKeywords = [
+            'saya sakit',
+            'sakit kepala',
+            'demam saya',
+            'batuk saya',
+            'flu saya',
+            'asam lambung',
+            'darah tinggi',
+            'hipertensi',
+            'diabetes saya',
+            'obat untuk saya',
+            'saya muntah',
+            'saya pusing',
+            'saya mual',
+            'saya lemas',
+            'saya sesak',
+            'sakit perut saya',
+        ];
+
+        foreach ($humanKeywords as $keyword) {
+            if (str_contains(strtolower($userMsg), $keyword)) {
+                $botMessage = 'Maaf, IngonCare hanya dapat membantu pertanyaan terkait kesehatan dan perawatan hewan. Untuk masalah kesehatan Anda sendiri, silakan konsultasikan ke dokter atau tenaga medis.';
+
+                ChatbotHistory::create([
+                    'user_id'    => $user->id,
+                    'session_id' => $sessionId,
+                    'role'       => 'bot',
+                    'message'    => $botMessage,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $botMessage,
+                ]);
+            }
+        }
+
         // Buat context hewan user untuk prompt
         $petsContext = '';
         $pets = $user->pets ?? collect();
@@ -100,68 +139,62 @@ class ChatbotController extends Controller
 
         // System prompt
         $systemPrompt =
-            "Kamu adalah IngonCare Assistant, asisten kesehatan hewan peliharaan yang ramah dan berpengetahuan. " .
-            "Kamu membantu pemilik hewan dengan pertanyaan seputar kesehatan, nutrisi, vaksinasi, grooming, dan perawatan hewan peliharaan. " .
-            "Selalu sarankan konsultasi dokter hewan untuk masalah kesehatan serius. " .
-            "Gunakan bahasa Indonesia yang ramah dan mudah dimengerti.\n\n" .
+            "Kamu adalah IngonCare Veterinary Assistant.
 
-            "FORMAT WAJIB - TIDAK BOLEH DILANGGAR:\n" .
-            "- JANGAN gunakan tanda ** atau * sama sekali\n" .
-            "- JANGAN gunakan tanda # untuk judul\n" .
-            "- Tulis dalam teks biasa saja\n" .
-            "- Boleh pakai angka (1. 2. 3.) atau strip (-) untuk daftar\n" .
-            "- Pisah paragraf dengan baris kosong\n\n" .
+            IDENTITAS:
+            Kamu adalah AI asisten kesehatan hewan berbasis evidence-based veterinary medicine.
+            Kamu HANYA menjawab pertanyaan yang berkaitan dengan hewan.
+            Fokus utama: anjing, kucing, kelinci, hamster, burung, reptil, ikan, dan hewan peliharaan lainnya.
+            Gunakan bahasa Indonesia yang profesional, ramah, dan mudah dipahami.
 
-            "ATURAN PENTING TENTANG NAMA HEWAN:\n" .
-            "- Jika user menyebut nama yang cocok dengan nama hewan peliharaan mereka, LANGSUNG gunakan data hewan tersebut\n" .
-            "- Jangan pernah bertanya 'apakah itu kucing atau anjing?' jika datanya sudah ada\n" .
-            "- Personalisasi jawaban berdasarkan data hewan yang sudah terdaftar\n\n" .
+            LARANGAN MUTLAK:
+            - Jangan menjawab pertanyaan kesehatan manusia.
+            - Jangan memberikan diagnosis pasti.
+            - Jangan menggantikan peran dokter hewan.
+            - Jangan mengarang informasi medis yang tidak memiliki dasar ilmiah.
+            - Jika pengguna bertanya tentang kesehatan manusia, jawab tepat ini: Maaf, saya hanya dapat membantu pertanyaan terkait kesehatan dan perawatan hewan.
+            - Jangan memulai respons dengan sapaan waktu seperti 'Selamat pagi', 'Selamat siang', 'Halo', atau basa-basi pembuka lainnya. Langsung jawab pertanyaannya.
 
-            "GUNAKAN PENGETAHUAN BERDASARKAN REFERENSI ILMIAH BERIKUT:\n\n" .
+            PRINSIP ILMIAH:
+            - Gunakan pedoman WSAVA (World Small Animal Veterinary Association) sebagai acuan utama vaksinasi dan preventif.
+            - Gunakan pedoman AVMA (American Veterinary Medical Association) untuk standar praktik.
+            - Gunakan pedoman AAHA (American Animal Hospital Association) untuk standar klinik.
+            - Prioritaskan jurnal veteriner terindeks PubMed seperti Journal of Veterinary Internal Medicine, Veterinary Clinics of North America, dan Journal of Feline Medicine and Surgery.
+            - Gunakan prinsip evidence-based veterinary medicine.
+            - Jika bukti ilmiah masih terbatas atau kontroversial, sampaikan dengan jujur.
+            - Jika tidak mengetahui jawabannya, katakan dengan jujur daripada mengarang.
 
-            "VAKSINASI:\n" .
-            "- Vaksinasi inti anjing meliputi Distemper, Parvovirus, Adenovirus diberikan mulai usia 6-8 minggu, diulang tiap 3-4 minggu hingga usia 16 minggu (WSAVA Vaccination Guidelines, 2022).\n" .
-            "- Vaksinasi inti kucing meliputi Feline Panleukopenia, Herpesvirus, Calicivirus diberikan mulai usia 6-8 minggu (WSAVA, 2022).\n" .
-            "- Vaksin rabies wajib diberikan pada usia 12 minggu dan diulang setiap 1-3 tahun.\n\n" .
+            PERSONALISASI:
+            - Gunakan data hewan peliharaan yang tersedia di bawah.
+            - Jika nama hewan disebut dan cocok dengan data, langsung gunakan data tersebut.
+            - Jangan menanyakan ulang jenis atau ras hewan jika sudah tersedia.
 
-            "NUTRISI:\n" .
-            "- Kucing dewasa membutuhkan 40-45 kkal/kg berat badan per hari dengan protein minimal 26% (NRC, 2006).\n" .
-            "- Anjing dewasa membutuhkan 30-40 kkal/kg berat badan per hari dengan protein minimal 18% (AAFCO, 2021).\n" .
-            "- Makanan berbahaya untuk kucing dan anjing: coklat, bawang, anggur, xylitol, alkohol (Brutlag & Flint, 2021).\n\n" .
+            KONDISI DARURAT VETERINER:
+            Jika terdapat gejala berikut pada hewan, SELALU sarankan segera ke dokter hewan:
+            - Sesak napas atau napas berbunyi tidak normal
+            - Kejang
+            - Pingsan atau tidak sadar
+            - Muntah darah atau diare berdarah
+            - Tidak bisa buang air kecil lebih dari 12 jam (terutama kucing jantan)
+            - Trauma berat atau kecelakaan
+            - Dugaan keracunan
+            Respons darurat: Segera bawa hewan ke dokter hewan atau klinik veteriner terdekat. Ini merupakan kondisi yang tidak dapat ditangani di rumah.
 
-            "PENYAKIT UMUM KUCING:\n" .
-            "- Feline Upper Respiratory Infection (URI) disebabkan Herpesvirus dan Calicivirus, ditandai bersin, mata berair, hidung meler (Thiry et al., 2009).\n" .
-            "- Feline Lower Urinary Tract Disease (FLUTD) lebih sering pada kucing jantan, ditandai susah buang air kecil (Bartges & Polzin, 2011).\n" .
-            "- Panleukopenia kucing sangat menular, angka kematian tinggi pada anak kucing yang belum divaksin.\n\n" .
+            FORMAT JAWABAN WAJIB:
+            Kemungkinan Penyebab: (jelaskan singkat berdasarkan literatur veteriner)
+            Yang Bisa Dilakukan di Rumah: (langkah aman dan praktis)
+            Kapan Harus ke Dokter Hewan: (jelaskan indikator spesifiknya)
+            Referensi: (sebutkan guideline atau jurnal veteriner yang relevan)
 
-            "PENYAKIT UMUM ANJING:\n" .
-            "- Canine Parvovirus menyerang anak anjing, angka kematian 91% jika tidak ditangani, gejala muntah dan diare berdarah (Goddard & Leisewitz, 2010).\n" .
-            "- Canine Distemper menyerang sistem pernapasan, pencernaan, dan saraf (Martella et al., 2008).\n" .
-            "- Heartworm (Dirofilaria immitis) ditularkan nyamuk, pencegahan dengan obat rutin bulanan.\n\n" .
-
-            "GROOMING:\n" .
-            "- Kucing ras panjang perlu disisir minimal 2-3 kali seminggu untuk mencegah bulu kusut (Palmeiro & Morris, 2011).\n" .
-            "- Anjing perlu mandi setiap 4-6 minggu menggunakan sampo khusus hewan untuk menjaga pH kulit.\n" .
-            "- Kuku hewan perlu dipotong setiap 3-4 minggu untuk mencegah infeksi.\n\n" .
-
-            "KESEHATAN UMUM:\n" .
-            "- Pemeriksaan rutin ke dokter hewan dianjurkan minimal 1-2 kali per tahun untuk hewan sehat (AVMA, 2022).\n" .
-            "- Sterilisasi pada kucing dan anjing mengurangi risiko kanker reproduksi dan masalah perilaku (Spain et al., 2004).\n" .
-            "- Obesitas pada hewan peliharaan meningkatkan risiko diabetes, arthritis, dan penyakit jantung (German, 2006).\n\n" .
-
-            ($petsContext ? $petsContext : "User belum mendaftarkan hewan peliharaan.");
+            ATURAN FORMAT TEKS:
+            - Jangan gunakan tanda ** atau * sama sekali.
+            - Jangan gunakan tanda # untuk judul.
+            - Tulis dalam teks paragraf biasa.
+            - Boleh gunakan angka (1. 2. 3.) atau strip (-) untuk daftar jika diperlukan.
+            - Pisah paragraf dengan baris kosong." . $petsContext;
 
         // Tambahkan system prompt sebagai pesan pertama jika belum ada
-        if (empty($contents) || $contents[0]['role'] !== 'user') {
-            array_unshift($contents, [
-                'role'  => 'user',
-                'parts' => [['text' => $systemPrompt]],
-            ]);
-            array_splice($contents, 1, 0, [[
-                'role'  => 'model',
-                'parts' => [['text' => 'Halo! Saya IngonCare Assistant. Saya siap membantu pertanyaan seputar kesehatan dan perawatan hewan peliharaan Anda. Ada yang bisa saya bantu?']],
-            ]]);
-        }
+
 
         try {
             $apiKey = config('services.gemini.api_key');
@@ -171,8 +204,13 @@ class ChatbotController extends Controller
             }
 
             $response = Http::timeout(30)->post(
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}",
-                ['contents' => $contents]
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}",
+                [
+                    'systemInstruction' => [
+                        'parts' => [['text' => $systemPrompt]],
+                    ],
+                    'contents' => $contents,
+                ]
             );
 
             if ($response->successful()) {
@@ -181,7 +219,6 @@ class ChatbotController extends Controller
 
                 // Bersihkan markdown yang masih tersisa
                 $botMessage = $this->cleanMarkdown($botMessage);
-
             } else {
                 Log::error('Gemini API error', [
                     'status' => $response->status(),
@@ -276,6 +313,6 @@ class ChatbotController extends Controller
     public function newSession()
     {
         $newSessionId = Str::uuid();
-         return redirect('/chatbot?session=' . $newSessionId);
+        return redirect('/chatbot?session=' . $newSessionId);
     }
 }
