@@ -3,136 +3,172 @@
 @section('title', 'Privasi')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
-    <div class="mb-6">
-        <div class="flex items-center gap-3 mb-4">
-            <a href="{{ route('settings.index') }}" 
-               class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Privasi</h1>
-                <p class="text-sm text-gray-500">Kelola privasi dan data pribadi anda</p>
-            </div>
+<div>
+
+    {{-- Header --}}
+    <div class="flex items-center gap-3 mb-8">
+        <a href="{{ route('settings.index') }}"
+           class="w-10 h-10 rounded-full flex items-center justify-center transition"
+           style="background:#EDE4F5;"
+           onmouseover="this.style.background='#CDB4DB'"
+           onmouseout="this.style.background='#EDE4F5'">
+            <i class="ti ti-arrow-left" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+        </a>
+        <div>
+            <h1 class="text-2xl font-bold" style="color:#2D1B69;">Privasi</h1>
+            <p class="text-sm mt-0.5" style="color:#9ca3af;">Kelola privasi dan data pribadi Anda</p>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 flex items-center justify-between">
-            <span>✓ {{ session('success') }}</span>
-            <button onclick="this.parentElement.remove()">✕</button>
-        </div>
+    <div class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium mb-6"
+         style="background:#f0fdf4; border:1.5px solid #bbf7d0; color:#15803d;">
+        <span class="flex items-center gap-2">
+            <i class="ti ti-circle-check" style="font-size:18px;"></i>
+            {{ session('success') }}
+        </span>
+        <button onclick="this.parentElement.remove()">
+            <i class="ti ti-x" style="font-size:16px;"></i>
+        </button>
+    </div>
     @endif
 
-    <form action="{{ route('settings.privacy.update') }}" method="POST">
-        @csrf
+    <div class="space-y-6">
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
-                <h3 class="font-bold text-lg flex items-center gap-2">
-                    <span class="text-2xl">🔒</span>
-                    Pengaturan Privasi
-                </h3>
+        {{-- Pengaturan Privasi --}}
+        <form action="{{ route('settings.privacy.update') }}" method="POST">
+            @csrf
+
+            <div class="bg-white rounded-2xl overflow-hidden"
+                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                <div class="px-5 py-4 flex items-center gap-2"
+                     style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+                    <i class="ti ti-shield-lock" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+                    <h2 class="font-bold" style="color:#5E4B8B;">Pengaturan Privasi</h2>
+                </div>
+
+                <div class="divide-y" style="border-color:#EDE4F5;">
+
+                    <div class="flex items-center justify-between px-5 py-4 transition"
+                         onmouseover="this.style.background='#FDFAFF'"
+                         onmouseout="this.style.background=''">
+                        <div>
+                            <h4 class="font-semibold text-sm" style="color:#2D1B69;">Profil Publik</h4>
+                            <p class="text-xs mt-0.5" style="color:#9ca3af;">Izinkan orang lain melihat profil Anda</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
+                            <input type="checkbox" name="profile_public" value="1"
+                                   {{ $settings->profile_public ? 'checked' : '' }} class="sr-only peer">
+                            <div class="{{ $settings->profile_public ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between px-5 py-4 transition"
+                         onmouseover="this.style.background='#FDFAFF'"
+                         onmouseout="this.style.background=''">
+                        <div>
+                            <h4 class="font-semibold text-sm" style="color:#2D1B69;">Tampilkan Email</h4>
+                            <p class="text-xs mt-0.5" style="color:#9ca3af;">Perlihatkan email di profil publik</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
+                            <input type="checkbox" name="show_email" value="1"
+                                   {{ $settings->show_email ? 'checked' : '' }} class="sr-only peer">
+                            <div class="{{ $settings->show_email ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between px-5 py-4 transition"
+                         onmouseover="this.style.background='#FDFAFF'"
+                         onmouseout="this.style.background=''">
+                        <div>
+                            <h4 class="font-semibold text-sm" style="color:#2D1B69;">Aktivitas Online</h4>
+                            <p class="text-xs mt-0.5" style="color:#9ca3af;">Tampilkan status online Anda</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
+                            <input type="checkbox" name="show_online_status" value="1"
+                                   {{ $settings->show_online_status ? 'checked' : '' }} class="sr-only peer">
+                            <div class="{{ $settings->show_online_status ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="px-5 py-4 flex justify-end gap-3"
+                     style="border-top:1.5px solid #EDE4F5; background:#FDFAFF;">
+                    <a href="{{ route('settings.index') }}"
+                       class="px-6 py-2.5 rounded-xl text-sm font-semibold transition"
+                       style="border:1.5px solid #CDB4DB; color:#9F86C0;"
+                       onmouseover="this.style.background='#EDE4F5'"
+                       onmouseout="this.style.background=''">
+                        Batal
+                    </a>
+                    <button type="submit"
+                            class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition"
+                            style="background:#9F86C0;"
+                            onmouseover="this.style.background='#5E4B8B'"
+                            onmouseout="this.style.background='#9F86C0'">
+                        <i class="ti ti-device-floppy" style="font-size:15px;" aria-hidden="true"></i>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        {{-- Data & Akun --}}
+        <div class="bg-white rounded-2xl overflow-hidden"
+             style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+            <div class="px-5 py-4 flex items-center gap-2"
+                 style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+                <i class="ti ti-database" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+                <h2 class="font-bold" style="color:#5E4B8B;">Data & Akun</h2>
             </div>
 
-            <div class="p-6 space-y-4">
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Profil Publik</h4>
-                        <p class="text-sm text-gray-500">Izinkan orang lain melihat profil anda</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="profile_public" value="1"
-                               {{ $settings->profile_public ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
-                    </label>
-                </div>
+            <div class="p-4 space-y-3">
 
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Tampilkan Email</h4>
-                        <p class="text-sm text-gray-500">Perlihatkan email di profil publik</p>
+                <a href="{{ route('settings.download.data') }}"
+                   class="flex items-center justify-between p-4 rounded-xl transition"
+                   style="border:1.5px solid #EDE4F5;"
+                   onmouseover="this.style.background='#FDFAFF'; this.style.borderColor='#CDB4DB'"
+                   onmouseout="this.style.background=''; this.style.borderColor='#EDE4F5'">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                             style="background:#EDE4F5;">
+                            <i class="ti ti-download" style="font-size:16px; color:#9F86C0;" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-sm" style="color:#2D1B69;">Download Data Saya</h4>
+                            <p class="text-xs mt-0.5" style="color:#9ca3af;">Unduh semua data yang Anda miliki</p>
+                        </div>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="show_email" value="1"
-                               {{ $settings->show_email ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
-                    </label>
-                </div>
-
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Aktivitas Online</h4>
-                        <p class="text-sm text-gray-500">Tampilkan status online anda</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="show_online_status" value="1"
-                               {{ $settings->show_online_status ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-                <a href="{{ route('settings.index') }}" 
-                   class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition">
-                    Batal
+                    <i class="ti ti-chevron-right" style="font-size:16px; color:#CDB4DB;"></i>
                 </a>
-                <button type="submit" 
-                        class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transition shadow">
-                    Simpan Perubahan
-                </button>
+
+                <form action="{{ route('profile.destroy') }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            onclick="return confirm('Yakin ingin menghapus akun? Semua data akan dihapus permanen.')"
+                            class="w-full flex items-center justify-between p-4 rounded-xl transition text-left"
+                            style="border:1.5px solid #fecaca;"
+                            onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#fca5a5'"
+                            onmouseout="this.style.background=''; this.style.borderColor='#fecaca'">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                                 style="background:#fef2f2;">
+                                <i class="ti ti-trash" style="font-size:16px; color:#ef4444;" aria-hidden="true"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm" style="color:#ef4444;">Hapus Akun</h4>
+                                <p class="text-xs mt-0.5" style="color:#9ca3af;">Hapus akun dan semua data secara permanen</p>
+                            </div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="font-size:16px; color:#fca5a5;"></i>
+                    </button>
+                </form>
+
             </div>
         </div>
-    </form>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50">
-            <h3 class="font-bold text-lg flex items-center gap-2">
-                <span class="text-2xl">🗑️</span>
-                Data & Akun
-            </h3>
-        </div>
-
-        <div class="p-6 space-y-3">
-            <a href="{{ route('settings.download.data') }}" 
-               class="w-full p-4 text-left hover:bg-gray-50 rounded-xl transition border border-gray-200 flex items-center justify-between">
-                <div>
-                    <h4 class="font-semibold text-gray-900">Download Data Saya</h4>
-                    <p class="text-sm text-gray-500">Unduh semua data yang anda miliki</p>
-                </div>
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
-            </a>
-
-            <form action="{{ route('profile.destroy') }}" method="POST">
-    @csrf
-    @method('DELETE')
-
-    <button type="submit"
-            onclick="return confirm('Yakin ingin menghapus akun? Semua data akan dihapus permanen.')"
-            class="w-full p-4 text-left hover:bg-red-50 rounded-xl transition border border-red-200 flex items-center justify-between">
-
-        <div>
-            <h4 class="font-semibold text-red-600">Hapus Akun</h4>
-            <p class="text-sm text-gray-500">
-                Hapus akun dan semua data secara permanen
-            </p>
-        </div>
-
-        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-        </svg>
-    </button>
-</form>
-        </div>
     </div>
 </div>
 @endsection

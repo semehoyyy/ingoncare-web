@@ -3,145 +3,170 @@
 @section('title', 'Pengaturan Notifikasi')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div>
 
-    <div class="mb-6">
-        <div class="flex items-center gap-3 mb-4">
-            <a href="{{ route('settings.index') }}" 
-               class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center">
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Pengaturan Notifikasi</h1>
-                <p class="text-sm text-gray-500">Kelola bagaimana anda menerima notifikasi</p>
-            </div>
+    {{-- Header --}}
+    <div class="flex items-center gap-3 mb-8">
+        <a href="{{ route('settings.index') }}"
+           class="w-10 h-10 rounded-full flex items-center justify-center transition"
+           style="background:#EDE4F5;"
+           onmouseover="this.style.background='#CDB4DB'"
+           onmouseout="this.style.background='#EDE4F5'">
+            <i class="ti ti-arrow-left" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+        </a>
+        <div>
+            <h1 class="text-2xl font-bold" style="color:#2D1B69;">Notifikasi</h1>
+            <p class="text-sm mt-0.5" style="color:#9ca3af;">Kelola bagaimana Anda menerima notifikasi</p>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 flex items-center justify-between">
-            <span>✓ {{ session('success') }}</span>
-            <button onclick="this.parentElement.remove()">✕</button>
-        </div>
+    <div class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium mb-6"
+         style="background:#f0fdf4; border:1.5px solid #bbf7d0; color:#15803d;">
+        <span class="flex items-center gap-2">
+            <i class="ti ti-circle-check" style="font-size:18px;"></i>
+            {{ session('success') }}
+        </span>
+        <button onclick="this.parentElement.remove()">
+            <i class="ti ti-x" style="font-size:16px;"></i>
+        </button>
+    </div>
     @endif
 
-    <form action="{{ route('settings.notifications.update') }}" method="POST">
+    <form action="{{ route('settings.notifications.update') }}" method="POST" class="space-y-6">
         @csrf
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
-                <h3 class="font-bold text-lg flex items-center gap-2">
-                    <span class="text-2xl">🔔</span>
-                    Push Notifications
-                </h3>
+        {{-- Push Notifications --}}
+        <div class="bg-white rounded-2xl overflow-hidden"
+             style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+            <div class="px-5 py-4 flex items-center gap-2"
+                 style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+                <i class="ti ti-bell-ringing" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+                <h2 class="font-bold" style="color:#5E4B8B;">Push Notifications</h2>
             </div>
 
-            <div class="p-5 space-y-4">
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div class="divide-y" style="border-color:#EDE4F5;">
+
+                <div class="flex items-center justify-between px-5 py-4 transition"
+                     onmouseover="this.style.background='#FDFAFF'"
+                     onmouseout="this.style.background=''">
                     <div>
-                        <h4 class="font-semibold text-gray-900">Aktifkan Notifikasi</h4>
-                        <p class="text-sm text-gray-500">Terima notifikasi dari IngonCare</p>
+                        <h4 class="font-semibold text-sm" style="color:#2D1B69;">Aktifkan Notifikasi</h4>
+                        <p class="text-xs mt-0.5" style="color:#9ca3af;">Terima notifikasi dari IngonCare</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="push_enabled" value="1" 
-                               {{ $settings->push_enabled ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
+                        <input type="checkbox" name="push_enabled" value="1"
+                               {{ $settings->push_enabled ? 'checked' : '' }} class="sr-only peer">
+                        <div class="{{ $settings->push_enabled ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
                     </label>
                 </div>
 
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
+                <div class="flex items-center justify-between px-5 py-4 transition"
+                     onmouseover="this.style.background='#FDFAFF'"
+                     onmouseout="this.style.background=''">
                     <div>
-                        <h4 class="font-semibold text-gray-900">Likes & Reaksi</h4>
-                        <p class="text-sm text-gray-500">Notifikasi saat ada yang menyukai postingan anda</p>
+                        <h4 class="font-semibold text-sm" style="color:#2D1B69;">Likes & Reaksi</h4>
+                        <p class="text-xs mt-0.5" style="color:#9ca3af;">Notifikasi saat ada yang menyukai postingan Anda</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
                         <input type="checkbox" name="notif_likes" value="1"
-                               {{ $settings->notif_likes ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                               {{ $settings->notif_likes ? 'checked' : '' }} class="sr-only peer">
+                        <div class="{{ $settings->notif_likes ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
                     </label>
                 </div>
 
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
+                <div class="flex items-center justify-between px-5 py-4 transition"
+                     onmouseover="this.style.background='#FDFAFF'"
+                     onmouseout="this.style.background=''">
                     <div>
-                        <h4 class="font-semibold text-gray-900">Komentar & Balasan</h4>
-                        <p class="text-sm text-gray-500">Notifikasi saat ada yang membalas postingan anda</p>
+                        <h4 class="font-semibold text-sm" style="color:#2D1B69;">Komentar & Balasan</h4>
+                        <p class="text-xs mt-0.5" style="color:#9ca3af;">Notifikasi saat ada yang membalas postingan Anda</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
                         <input type="checkbox" name="notif_comments" value="1"
-                               {{ $settings->notif_comments ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                               {{ $settings->notif_comments ? 'checked' : '' }} class="sr-only peer">
+                        <div class="{{ $settings->notif_comments ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
                     </label>
                 </div>
 
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
+                <div class="flex items-center justify-between px-5 py-4 transition"
+                     onmouseover="this.style.background='#FDFAFF'"
+                     onmouseout="this.style.background=''">
                     <div>
-                        <h4 class="font-semibold text-gray-900">Pengingat Perawatan</h4>
-                        <p class="text-sm text-gray-500">Notifikasi pengingat vaksinasi dan perawatan hewan</p>
+                        <h4 class="font-semibold text-sm" style="color:#2D1B69;">Pengingat Perawatan</h4>
+                        <p class="text-xs mt-0.5" style="color:#9ca3af;">Notifikasi pengingat vaksinasi dan perawatan hewan</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
                         <input type="checkbox" name="notif_reminders" value="1"
-                               {{ $settings->notif_reminders ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                               {{ $settings->notif_reminders ? 'checked' : '' }} class="sr-only peer">
+                        <div class="{{ $settings->notif_reminders ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
                     </label>
                 </div>
+
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
-                <h3 class="font-bold text-lg flex items-center gap-2">
-                    <span class="text-2xl">📧</span>
-                    Email Notifications
-                </h3>
+        {{-- Email Notifications --}}
+        <div class="bg-white rounded-2xl overflow-hidden"
+             style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+            <div class="px-5 py-4 flex items-center gap-2"
+                 style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+                <i class="ti ti-mail" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
+                <h2 class="font-bold" style="color:#5E4B8B;">Email Notifications</h2>
             </div>
 
-            <div class="p-5 space-y-4">
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
+            <div class="divide-y" style="border-color:#EDE4F5;">
+
+                <div class="flex items-center justify-between px-5 py-4 transition"
+                     onmouseover="this.style.background='#FDFAFF'"
+                     onmouseout="this.style.background=''">
                     <div>
-                        <h4 class="font-semibold text-gray-900">Ringkasan Mingguan</h4>
-                        <p class="text-sm text-gray-500">Terima ringkasan aktivitas setiap minggu via email</p>
+                        <h4 class="font-semibold text-sm" style="color:#2D1B69;">Ringkasan Mingguan</h4>
+                        <p class="text-xs mt-0.5" style="color:#9ca3af;">Terima ringkasan aktivitas setiap minggu via email</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
                         <input type="checkbox" name="email_weekly" value="1"
-                               {{ $settings->email_weekly ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                               {{ $settings->email_weekly ? 'checked' : '' }} class="sr-only peer">
+                        <div class="{{ $settings->email_weekly ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
                     </label>
                 </div>
 
-                <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition">
+                <div class="flex items-center justify-between px-5 py-4 transition"
+                     onmouseover="this.style.background='#FDFAFF'"
+                     onmouseout="this.style.background=''">
                     <div>
-                        <h4 class="font-semibold text-gray-900">Tips & Update</h4>
-                        <p class="text-sm text-gray-500">Terima tips perawatan hewan dan update fitur</p>
+                        <h4 class="font-semibold text-sm" style="color:#2D1B69;">Tips & Update</h4>
+                        <p class="text-xs mt-0.5" style="color:#9ca3af;">Terima tips perawatan hewan dan update fitur</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
                         <input type="checkbox" name="email_tips" value="1"
-                               {{ $settings->email_tips ? 'checked' : '' }}
-                               class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                               {{ $settings->email_tips ? 'checked' : '' }} class="sr-only peer">
+                        <div class="{{ $settings->email_tips ? 'bg-[#9F86C0]' : 'bg-gray-300' }} w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#9F86C0]"></div>
                     </label>
                 </div>
+
             </div>
         </div>
 
+        {{-- Buttons --}}
         <div class="flex justify-end gap-3">
-            <a href="{{ route('settings.index') }}" 
-               class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition">
+            <a href="{{ route('settings.index') }}"
+               class="px-6 py-3 rounded-xl text-sm font-semibold transition"
+               style="border:1.5px solid #CDB4DB; color:#9F86C0;"
+               onmouseover="this.style.background='#EDE4F5'"
+               onmouseout="this.style.background=''">
                 Batal
             </a>
-            <button type="submit" 
-                    class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transition shadow">
+            <button type="submit"
+                    class="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition"
+                    style="background:#9F86C0;"
+                    onmouseover="this.style.background='#5E4B8B'"
+                    onmouseout="this.style.background='#9F86C0'">
+                <i class="ti ti-device-floppy" style="font-size:16px;" aria-hidden="true"></i>
                 Simpan Pengaturan
             </button>
         </div>
 
     </form>
-
 </div>
 @endsection
