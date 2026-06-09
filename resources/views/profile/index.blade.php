@@ -20,7 +20,7 @@
 
     {{-- COVER BANNER --}}
     <div class="relative rounded-2xl overflow-hidden"
-         style="background:linear-gradient(135deg,#2D1B69 0%,#5E4B8B 50%,#9F86C0 100%); min-height:200px;">
+         style="background:linear-gradient(135deg,#2D1B69 0%,#5E4B8B 50%,#9F86C0 100%); min-height:150px;">
 
         {{-- Dot Pattern --}}
         <div class="absolute inset-0 opacity-10">
@@ -53,8 +53,8 @@
     <div class="relative px-2 pb-2">
 
         {{-- Avatar --}}
-        <div class="-mt-20 mb-4 relative z-10">
-            <div class="w-32 h-32 rounded-full overflow-hidden flex-shrink-0"
+        <div class="-mt-14 lg:-mt-20 mb-4 relative z-10">
+            <div class="w-24 h-24 lg:w-32 lg:h-32 rounded-full overflow-hidden flex-shrink-0"
                  style="border:4px solid white; box-shadow:0 4px 20px rgba(159,134,192,0.3); background:#EDE4F5;">
                 @if($user->profile_photo)
                     <img src="{{ asset('storage/' . $user->profile_photo) }}"
@@ -70,7 +70,7 @@
         {{-- User Info --}}
         <div class="mb-6">
             <div class="flex flex-wrap items-center gap-3 mb-2">
-                <h1 class="text-3xl font-bold" style="color:#2D1B69;">{{ $user->name }}</h1>
+                <h1 class="text-2xl lg:text-3xl font-bold" style="color:#2D1B69;">{{ $user->name }}</h1>
 
                 @if($settings && $settings->show_online_status)
                 <span class="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium"
@@ -101,27 +101,27 @@
         </div>
 
         {{-- STATS --}}
-        <div class="grid grid-cols-3 gap-4">
-            <div class="bg-white rounded-2xl p-5 text-center"
-                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
-                <div class="text-3xl font-bold" style="color:#2D1B69;">{{ $stats['total_posts'] }}</div>
-                <div class="text-sm mt-1" style="color:#9ca3af;">Postingan</div>
+            <div class="grid grid-cols-3 gap-2 lg:gap-4">
+                <div class="bg-white rounded-2xl p-3 lg:p-5 text-center"
+                     style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                    <div class="text-xl lg:text-3xl font-bold" style="color:#2D1B69;">{{ $stats['total_posts'] }}</div>
+                    <div class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">Postingan</div>
+                </div>
+                <div class="bg-white rounded-2xl p-3 lg:p-5 text-center"
+                     style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                    <div class="text-xl lg:text-3xl font-bold" style="color:#2D1B69;">{{ $stats['total_replies'] }}</div>
+                    <div class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">Balasan</div>
+                </div>
+                <div class="bg-white rounded-2xl p-3 lg:p-5 text-center"
+                     style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+                    <div class="text-xl lg:text-3xl font-bold" style="color:#2D1B69;">{{ $stats['total_likes'] }}</div>
+                    <div class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">Likes</div>
+                </div>
             </div>
-            <div class="bg-white rounded-2xl p-5 text-center"
-                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
-                <div class="text-3xl font-bold" style="color:#2D1B69;">{{ $stats['total_replies'] }}</div>
-                <div class="text-sm mt-1" style="color:#9ca3af;">Balasan</div>
-            </div>
-            <div class="bg-white rounded-2xl p-5 text-center"
-                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
-                <div class="text-3xl font-bold" style="color:#2D1B69;">{{ $stats['total_likes'] }}</div>
-                <div class="text-sm mt-1" style="color:#9ca3af;">Likes</div>
-            </div>
-        </div>
     </div>
 
     {{-- MAIN CONTENT --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
 
         {{-- LEFT: HEWAN PELIHARAAN --}}
         <div>

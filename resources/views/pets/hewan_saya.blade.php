@@ -6,13 +6,13 @@
 <div>
 
     {{-- Header --}}
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 lg:mb-8">
         <div>
-            <h1 class="text-2xl font-bold" style="color:#2D1B69;">Hewan Peliharaan Saya</h1>
-            <p class="text-sm mt-1" style="color:#9ca3af;">Kelola informasi dan kesehatan hewan peliharaan Anda</p>
+            <h1 class="text-xl lg:text-2xl font-bold" style="color:#2D1B69;">Hewan Peliharaan Saya</h1>
+            <p class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">Kelola informasi dan kesehatan hewan peliharaan Anda</p>
         </div>
         <a href="{{ route('pets.create') }}">
-            <button class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition"
+            <button class="flex items-center gap-2 px-4 lg:px-5 py-2 lg:py-2.5 rounded-xl font-semibold text-sm text-white transition"
                 style="background:#9F86C0;"
                 onmouseover="this.style.background='#5E4B8B'"
                 onmouseout="this.style.background='#9F86C0'">
@@ -23,14 +23,14 @@
     </div>
 
     {{-- Total Hewan --}}
-    <div class="mb-8">
-        <div class="bg-white rounded-2xl px-6 py-5 inline-flex items-center gap-4" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+    <div class="mb-6 lg:mb-8">
+        <div class="bg-white rounded-2xl px-5 lg:px-6 py-4 lg:py-5 inline-flex items-center gap-4" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
             <div>
-                <p class="text-sm" style="color:#9ca3af;">Total Hewan</p>
-                <h2 class="text-3xl font-bold mt-1" style="color:#2D1B69;">{{ $totalHewan }}</h2>
+                <p class="text-xs lg:text-sm" style="color:#9ca3af;">Total Hewan</p>
+                <h2 class="text-2xl lg:text-3xl font-bold mt-1" style="color:#2D1B69;">{{ $totalHewan }}</h2>
             </div>
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background:#EDE4F5;">
-                <i class="ti ti-paw" style="font-size:26px; color:#9F86C0;" aria-hidden="true"></i>
+            <div class="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center" style="background:#EDE4F5;">
+                <i class="ti ti-paw" style="font-size:24px; color:#9F86C0;" aria-hidden="true"></i>
             </div>
         </div>
     </div>
@@ -45,7 +45,7 @@
             <p class="text-sm mt-1" style="color:#9ca3af;">Tambahkan hewan peliharaan pertama kamu!</p>
         </div>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
             @foreach ($pets as $pet)
             <div class="rounded-2xl bg-white overflow-hidden transition-all"
                 style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);"

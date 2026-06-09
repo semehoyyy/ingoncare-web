@@ -13,6 +13,7 @@ class Pengingat extends Model
 
     protected $fillable = [
         'user_id',
+        'pet_id',
         'nama_hewan',
         'kategori',
         'tanggal',

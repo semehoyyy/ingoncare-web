@@ -6,13 +6,13 @@
 <div>
 
     {{-- Header --}}
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 lg:mb-8">
         <div>
-            <h1 class="text-2xl font-bold" style="color:#2D1B69;">Pengingat Perawatan</h1>
-            <p class="text-sm mt-1" style="color:#9ca3af;">Kelola jadwal perawatan hewan peliharaan Anda</p>
+            <h1 class="text-xl lg:text-2xl font-bold" style="color:#2D1B69;">Pengingat Perawatan</h1>
+            <p class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">Kelola jadwal perawatan hewan peliharaan Anda</p>
         </div>
         <a href="{{ route('pengingat.create') }}">
-            <button class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition"
+            <button class="flex items-center gap-2 px-4 lg:px-5 py-2 lg:py-2.5 rounded-xl font-semibold text-sm text-white transition"
                 style="background:#9F86C0;"
                 onmouseover="this.style.background='#5E4B8B'"
                 onmouseout="this.style.background='#9F86C0'">
@@ -23,25 +23,25 @@
     </div>
 
     {{-- PENGINGAT AKTIF --}}
-    <div class="bg-white rounded-2xl overflow-hidden mb-6" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
-        <div class="p-4 flex items-center gap-2" style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
+    <div class="bg-white rounded-2xl overflow-hidden mb-4 lg:mb-6" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
+        <div class="p-3 lg:p-4 flex items-center gap-2" style="background:linear-gradient(135deg,#EDE4F5,#CDB4DB); border-bottom:1.5px solid #CDB4DB;">
             <i class="ti ti-bell-ringing" style="font-size:18px; color:#5E4B8B;" aria-hidden="true"></i>
-            <h2 class="font-bold" style="color:#5E4B8B;">Pengingat Aktif ({{ count($aktif) }})</h2>
+            <h2 class="font-bold text-sm lg:text-base" style="color:#5E4B8B;">Pengingat Aktif ({{ count($aktif) }})</h2>
         </div>
 
-        <div class="p-4 space-y-3">
+        <div class="p-3 lg:p-4 space-y-3">
             @forelse ($aktif as $item)
-            <div class="p-4 rounded-xl flex justify-between items-start transition"
+            <div class="p-3 lg:p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start gap-3 transition"
                 style="border:1.5px solid #EDE4F5;"
                 onmouseover="this.style.background='#FDFAFF'"
                 onmouseout="this.style.background=''">
                 <div class="flex-1 min-w-0">
-                    <h3 class="font-bold" style="color:#2D1B69;">{{ $item->nama_hewan }}</h3>
+                    <h3 class="font-bold text-sm lg:text-base" style="color:#2D1B69;">{{ $item->nama_hewan }}</h3>
                     <span class="inline-block text-xs px-2 py-0.5 rounded-full mt-1 font-medium"
                         style="background:#EDE4F5; color:#9F86C0;">
                         {{ $item->kategori }}
                     </span>
-                    <div class="flex items-center gap-4 mt-2 text-sm" style="color:#9ca3af;">
+                    <div class="flex items-center gap-3 lg:gap-4 mt-2 text-xs lg:text-sm flex-wrap" style="color:#9ca3af;">
                         <span class="flex items-center gap-1">
                             <i class="ti ti-calendar" style="font-size:14px; color:#9F86C0;" aria-hidden="true"></i>
                             {{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}
@@ -52,11 +52,11 @@
                         </span>
                     </div>
                     @if($item->deskripsi)
-                        <p class="text-sm mt-1" style="color:#9ca3af;">{{ $item->deskripsi }}</p>
+                        <p class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">{{ $item->deskripsi }}</p>
                     @endif
                 </div>
 
-                <div class="flex items-center gap-2 ml-4 flex-shrink-0">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     <form action="{{ route('pengingat.selesai', $item->id) }}" method="POST">
                         @csrf
                         <button class="w-9 h-9 rounded-lg flex items-center justify-center transition"

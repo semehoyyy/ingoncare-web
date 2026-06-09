@@ -4,12 +4,26 @@
 
 @section('content')
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+{{-- Mobile Search Bar --}}
+<div class="lg:hidden mb-4">
+    <form action="{{ route('search') }}" method="GET" class="relative">
+        <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2" style="font-size:16px; color:#9F86C0;" aria-hidden="true"></i>
+        <input
+            type="text"
+            name="q"
+            value="{{ request('q') }}"
+            placeholder="Cari diskusi atau pengguna..."
+            class="w-full pl-9 pr-4 py-2.5 rounded-full text-sm focus:outline-none focus:ring-2"
+            style="background:white; border:1.5px solid #CDB4DB;">
+    </form>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
 
     {{-- ===================== --}}
     {{-- KOLOM POSTINGAN       --}}
     {{-- ===================== --}}
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2 space-y-4 lg:space-y-6 order-1">
 
         {{-- Form Tambah Post --}}
         <div class="bg-white rounded-2xl overflow-hidden" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
@@ -210,7 +224,7 @@
     {{-- ===================== --}}
     {{-- KOLOM KANAN           --}}
     {{-- ===================== --}}
-    <div class="space-y-6">
+    <div class="space-y-4 lg:space-y-6 order-2">
 
         {{-- Hewan Peliharaan --}}
         <div class="bg-white rounded-2xl overflow-hidden" style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">

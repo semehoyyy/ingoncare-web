@@ -1,0 +1,262 @@
+### ============================================
+### IngonCare API Test - REST Client (VSCode)
+### ============================================
+### Install extension: "REST Client" by Huachao Mao
+### Klik "Send Request" di atas tiap request untuk test
+### ============================================
+
+@baseUrl = http://127.0.0.1:8000/api
+@token = 2|h0WQOPHBkTMffs4BoR920oqXHXA0rZz0CV74XRKB95e078a1
+
+### ==========================================
+### AUTH - Register
+### ==========================================
+
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "081234567890",
+    "password": "Password1!",
+    "password_confirmation": "Password1!"
+}
+
+### ==========================================
+### AUTH - Login Direct (tanpa OTP, untuk testing)
+### ==========================================
+
+POST {{baseUrl}}/login-direct
+Content-Type: application/json
+
+{
+    "login": "test@example.com",
+    "password": "Password1!"
+}
+
+### ==========================================
+### AUTH - Login (dengan OTP)
+### ==========================================
+
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "login": "test@example.com",
+    "password": "Password1!"
+}
+
+### ==========================================
+### AUTH - Verify OTP
+### ==========================================
+
+POST {{baseUrl}}/verify-otp
+Content-Type: application/json
+
+{
+    "user_id": 1,
+    "otp": "123456"
+}
+
+### ==========================================
+### AUTH - Get Current User
+### ==========================================
+
+GET {{baseUrl}}/me
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PROFILE - Get Profile
+### ==========================================
+
+GET {{baseUrl}}/profile
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PROFILE - Update Profile
+### ==========================================
+
+POST {{baseUrl}}/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "Test User Updated",
+    "email": "test@example.com",
+    "phone": "081234567890",
+    "dob": "2000-01-15",
+    "address": "Bandung, Indonesia"
+}
+
+### ==========================================
+### PETS - List Hewan
+### ==========================================
+
+GET {{baseUrl}}/pets
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PETS - Tambah Hewan
+### ==========================================
+
+POST {{baseUrl}}/pets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "Milo",
+    "species": "Kucing",
+    "breed": "Persia",
+    "gender": "Jantan",
+    "birth_date": "2023-03-15",
+    "weight": 4.5,
+    "special_marks": "Bulu putih",
+    "is_steril": false,
+    "allergies": "",
+    "health_notes": "Sehat"
+}
+
+### ==========================================
+### PETS - Detail Hewan
+### ==========================================
+
+GET {{baseUrl}}/pets/1
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PETS - Hapus Hewan
+### ==========================================
+
+DELETE {{baseUrl}}/pets/1
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PENGINGAT - List
+### ==========================================
+
+GET {{baseUrl}}/pengingat
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PENGINGAT - Tambah
+### ==========================================
+
+POST {{baseUrl}}/pengingat
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pet_id": 1,
+    "kategori": "Vaksinasi",
+    "tanggal": "2026-06-15",
+    "waktu": "09:00",
+    "deskripsi": "Vaksin rabies tahunan"
+}
+
+### ==========================================
+### PENGINGAT - Tandai Selesai
+### ==========================================
+
+POST {{baseUrl}}/pengingat/1/selesai
+Authorization: Bearer {{token}}
+
+### ==========================================
+### RIWAYAT - List
+### ==========================================
+
+GET {{baseUrl}}/riwayat
+Authorization: Bearer {{token}}
+
+### ==========================================
+### RIWAYAT - Tambah
+### ==========================================
+
+POST {{baseUrl}}/riwayat
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pet_id": 1,
+    "tanggal_pemeriksaan": "2026-06-01",
+    "diagnosis": "Flu ringan",
+    "tindakan": "Pemberian obat flu",
+    "dokter": "drh. Andi",
+    "catatan": "Istirahat 3 hari",
+    "jadwal_berikutnya": "2026-06-08"
+}
+
+### ==========================================
+### CHATBOT - New Session
+### ==========================================
+
+GET {{baseUrl}}/chatbot/new-session
+Authorization: Bearer {{token}}
+
+### ==========================================
+### CHATBOT - Send Message
+### ==========================================
+
+POST {{baseUrl}}/chatbot/send
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "session_id": "test-session-001",
+    "message": "Kucing saya muntah-muntah, kenapa ya?"
+}
+
+### ==========================================
+### CHATBOT - History
+### ==========================================
+
+GET {{baseUrl}}/chatbot/history?session_id=test-session-001
+Authorization: Bearer {{token}}
+
+### ==========================================
+### CHATBOT - List Sessions
+### ==========================================
+
+GET {{baseUrl}}/chatbot/sessions
+Authorization: Bearer {{token}}
+
+### ==========================================
+### FORUM - List Posts
+### ==========================================
+
+GET {{baseUrl}}/forum?filter=terbaru
+Authorization: Bearer {{token}}
+
+### ==========================================
+### FORUM - Create Post
+### ==========================================
+
+POST {{baseUrl}}/forum
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Tips merawat kucing",
+    "content": "Sharing tips merawat kucing untuk pemula, yuk diskusi!"
+}
+
+### ==========================================
+### FORUM - Like Post
+### ==========================================
+
+POST {{baseUrl}}/forum/1/like
+Authorization: Bearer {{token}}
+
+### ==========================================
+### FORUM - Search
+### ==========================================
+
+GET {{baseUrl}}/forum-search?q=kucing
+Authorization: Bearer {{token}}
+
+### ==========================================
+### AUTH - Logout
+### ==========================================
+
+POST {{baseUrl}}/logout
+Authorization: Bearer {{token}}

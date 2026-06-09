@@ -4,10 +4,10 @@
 @section('title', 'Chatbot Kesehatan Hewan')
 
 @section('content')
-<div class="flex gap-4 h-[calc(100vh-200px)]">
+<div class="flex gap-4 h-[calc(100vh-160px)] lg:h-[calc(100vh-200px)]">
 
-    {{-- SIDEBAR --}}
-    <div class="w-72 flex-shrink-0 bg-white rounded-2xl flex flex-col overflow-hidden"
+    {{-- SIDEBAR (hidden on mobile) --}}
+    <div class="hidden lg:flex w-72 flex-shrink-0 bg-white rounded-2xl flex-col overflow-hidden"
          style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
 
         {{-- Sidebar Header --}}

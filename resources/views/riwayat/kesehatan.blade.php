@@ -6,16 +6,16 @@
 <div class="space-y-6">
 
     {{-- HEADER --}}
-    <div class="flex justify-between items-start">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
         <div>
-            <h1 class="text-2xl font-bold" style="color:#2D1B69;">Riwayat Kesehatan</h1>
-            <p class="text-sm mt-1" style="color:#9ca3af;">
+            <h1 class="text-xl lg:text-2xl font-bold" style="color:#2D1B69;">Riwayat Kesehatan</h1>
+            <p class="text-xs lg:text-sm mt-1" style="color:#9ca3af;">
                 Catatan lengkap pemeriksaan kesehatan hewan peliharaan Anda
             </p>
         </div>
 
         <a href="{{ route('riwayat.create') }}"
-           class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition"
+           class="flex items-center gap-2 px-4 lg:px-5 py-2 lg:py-2.5 rounded-xl font-semibold text-sm text-white transition"
            style="background:#9F86C0;"
            onmouseover="this.style.background='#5E4B8B'"
            onmouseout="this.style.background='#9F86C0'">
@@ -25,7 +25,7 @@
     </div>
 
     {{-- STATISTIK --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
 
         <div class="bg-white rounded-2xl p-6 relative overflow-hidden"
              style="border:1.5px solid #EDE4F5; box-shadow:0 2px 12px rgba(159,134,192,0.08);">
@@ -85,7 +85,7 @@
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
 
             @foreach ($riwayats as $riwayat)
             @php
