@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pengingat;
 use App\Models\Pet;
+use App\Models\Notification;
+use Carbon\Carbon;
 
 class ApiPengingatController extends Controller
 {
@@ -67,6 +69,25 @@ class ApiPengingatController extends Controller
             'status'     => 'aktif',
         ]);
 
+        // Buat notifikasi agar muncul di halaman Notifikasi Flutter
+        $notifyAt = null;
+
+        try {
+            $notifyAt = Carbon::parse($request->tanggal . ' ' . $request->waktu);
+        } catch (\Exception $e) {
+            $notifyAt = Carbon::parse($request->tanggal);
+        }
+
+        Notification::create([
+            'user_id'   => $request->user()->id,
+            'type'      => 'pengingat',
+            'title'     => 'Pengingat Hewan',
+            'message'   => 'Pengingat ' . $request->kategori . ' untuk ' . $pet->name . ' telah dibuat.',
+            'link'      => '/pengingat',
+            'notify_at' => $notifyAt,
+            'is_read'   => false,
+        ]);
+
         return response()->json([
             'success'   => true,
             'message'   => 'Pengingat berhasil ditambahkan!',
@@ -91,6 +112,16 @@ class ApiPengingatController extends Controller
         }
 
         $pengingat->update(['status' => 'selesai']);
+
+        Notification::create([
+            'user_id'   => $request->user()->id,
+            'type'      => 'pengingat',
+            'title'     => 'Pengingat Selesai',
+            'message'   => 'Pengingat ' . $pengingat->kategori . ' untuk ' . $pengingat->nama_hewan . ' telah ditandai selesai.',
+            'link'      => '/pengingat',
+            'notify_at' => now(),
+            'is_read'   => false,
+        ]);
 
         return response()->json([
             'success' => true,
