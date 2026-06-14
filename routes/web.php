@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
@@ -260,3 +261,10 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return view('legal.privacy');
 })->name('privacy');
+
+Route::get('/open-reset-password', function (Request $request) {
+    $email = urlencode($request->query('email'));
+    $token = $request->query('token');
+
+    return redirect("ingoncare://reset-password?email={$email}&token={$token}");
+});

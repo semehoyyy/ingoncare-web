@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Mail\SendOtpMail;
-
 
 class ApiAuthController extends Controller
 {
@@ -47,7 +46,7 @@ class ApiAuthController extends Controller
             ], 422);
         }
 
-        $user = User::create([
+        User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'phone'    => $request->phone,
@@ -81,23 +80,22 @@ class ApiAuthController extends Controller
             ], 401);
         }
 
-        // Generate OTP
         $otp = rand(100000, 999999);
+
         $user->otp = $otp;
         $user->otp_expires_at = now()->addMinutes(5);
         $user->save();
 
-        // Kirim OTP via email
         try {
             Mail::to($user->email)->send(new SendOtpMail($otp));
         } catch (\Exception $e) {
-            // Jika email gagal, tetap return success agar development lancar
+            // silent for development
         }
 
         return response()->json([
-            'success'  => true,
-            'message'  => 'OTP telah dikirim ke email Anda.',
-            'user_id'  => $user->id,
+            'success'      => true,
+            'message'      => 'OTP telah dikirim ke email Anda.',
+            'user_id'      => $user->id,
             'requires_otp' => true,
         ]);
     }
@@ -128,12 +126,10 @@ class ApiAuthController extends Controller
             ], 401);
         }
 
-        // Clear OTP
         $user->otp = null;
         $user->otp_expires_at = null;
         $user->save();
 
-        // Create Sanctum token
         $token = $user->createToken('ingoncare-mobile')->plainTextToken;
 
         return response()->json([
@@ -171,6 +167,7 @@ class ApiAuthController extends Controller
         }
 
         $otp = rand(100000, 999999);
+
         $user->otp = $otp;
         $user->otp_expires_at = now()->addMinutes(5);
         $user->save();
@@ -188,7 +185,7 @@ class ApiAuthController extends Controller
     }
 
     /**
-     * Login tanpa OTP (untuk development/testing)
+     * Login tanpa OTP untuk development/testing
      */
     public function loginDirect(Request $request)
     {
@@ -227,43 +224,147 @@ class ApiAuthController extends Controller
     }
 
     /**
-     * Forgot Password
+     * Forgot Password — kirim link deep link ke Flutter
      */
     public function forgotPassword(Request $request)
     {
-    $request->validate([
-        'email' => 'required|email'
-    ]);
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-    $status = Password::sendResetLink(
-        $request->only('email')
-    );
+        $user = User::where('email', $request->email)->first();
 
-    if ($status === Password::RESET_LINK_SENT) {
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email tidak ditemukan atau tidak terdaftar.',
+            ], 404);
+        }
+
+        $token = Str::random(40);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => now(),
+            ]
+        );
+
+        $resetLink = url('/open-reset-password') . '?email=' . urlencode($user->email) . '&token=' . $token;
+
+        try {
+            Mail::send([], [], function ($message) use ($user, $resetLink) {
+                $message->to($user->email)
+                    ->subject('Reset Password IngonCare')
+                    ->html('
+                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                            <h2>Reset Password IngonCare</h2>
+
+                            <p>Halo,</p>
+
+                            <p>Kami menerima permintaan untuk reset password akun IngonCare Anda.</p>
+
+                            <p>Klik tombol di bawah ini untuk membuat password baru:</p>
+
+                            <p style="margin: 24px 0;">
+                                <a href="' . $resetLink . '"
+                                   style="
+                                        background-color: #4CAF50;
+                                        color: white;
+                                        padding: 12px 20px;
+                                        text-decoration: none;
+                                        border-radius: 8px;
+                                        display: inline-block;
+                                        font-weight: bold;
+                                   ">
+                                    Reset Password
+                                </a>
+                            </p>
+
+                            <p>Jika tombol tidak bisa diklik, salin link berikut:</p>
+
+                            <p style="word-break: break-all;">
+                                ' . $resetLink . '
+                            </p>
+
+                            <p>Jika Anda tidak meminta reset password, abaikan email ini.</p>
+
+                            <p>Terima kasih,<br>IngonCare</p>
+                        </div>
+                    ');
+            });
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email reset password.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Link reset kata sandi telah dikirim ke email Anda.',
         ]);
     }
 
-    return response()->json([
-        'success' => false,
-        'message' => 'Email tidak ditemukan atau tidak terdaftar.',
-    ], 404);
-    }
-
     /**
-     * Reset Password (with OTP verification)
+     * Reset Password — pakai email dan token dari deep link
      */
     public function resetPassword(Request $request)
     {
-        $request->validate([
-            'user_id'  => 'required|integer',
-            'otp'      => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'token'    => 'required|string',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
+            ],
+        ], [
+            'password.min'       => 'Password minimal 8 karakter.',
+            'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
+            'password.confirmed' => 'Password dan Confirm Password tidak sama!',
         ]);
 
-        $user = User::find($request->user_id);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $reset = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$reset) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token reset tidak valid atau sudah kedaluwarsa.',
+            ], 400);
+        }
+
+        $createdAt = $reset->created_at ? \Carbon\Carbon::parse($reset->created_at) : null;
+
+        if ($createdAt && $createdAt->lt(now()->subMinutes(60))) {
+            DB::table('password_reset_tokens')
+                ->where('email', $request->email)
+                ->delete();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Token reset sudah kedaluwarsa.',
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
 
         if (!$user) {
             return response()->json([
@@ -272,16 +373,39 @@ class ApiAuthController extends Controller
             ], 404);
         }
 
-        if ($user->otp != $request->otp || now()->gt($user->otp_expires_at)) {
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diperbarui.',
+        ]);
+    }
+
+    /**
+     * Reset Password Direct — tanpa email token, untuk development/testing
+     */
+    public function resetPasswordDirect(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'OTP salah atau sudah expired.',
-            ], 401);
+                'message' => 'Email tidak ditemukan.',
+            ], 404);
         }
 
         $user->password = Hash::make($request->password);
-        $user->otp = null;
-        $user->otp_expires_at = null;
         $user->save();
 
         return response()->json([
@@ -321,34 +445,6 @@ class ApiAuthController extends Controller
                 'address'       => $user->address,
                 'profile_photo' => $user->profile_photo,
             ],
-        ]);
-    }
-
-    /**
-     * Reset Password Direct (tanpa OTP/email, langsung reset)
-     */
-    public function resetPasswordDirect(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email tidak ditemukan.',
-            ], 404);
-        }
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Password berhasil diperbarui.',
         ]);
     }
 }

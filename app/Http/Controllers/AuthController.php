@@ -62,39 +62,39 @@ class AuthController extends Controller
     }
 
     public function prosesRegister(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'name'      => 'required|string|max:255',
-        'email'     => 'required|string|email|max:255|unique:users',
-        'phone'     => 'required|unique:users',
-        'password'  => [
-            'required',
-            'string',
-            'min:8',
-            'confirmed',
-            'regex:/[A-Z]/',
-            'regex:/[0-9]/',
-            'regex:/[@$!%*#?&]/',
-        ],
-    ], [
-        'password.min'       => 'Password minimal 8 karakter.',
-        'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
-        'password.confirmed' => 'Password dan Confirm Password tidak sama!',
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|string|email|max:255|unique:users',
+            'phone'     => 'required|unique:users',
+            'password'  => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
+            ],
+        ], [
+            'password.min'       => 'Password minimal 8 karakter.',
+            'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
+            'password.confirmed' => 'Password dan Confirm Password tidak sama!',
+        ]);
 
-    if ($validator->fails()) {
-        return redirect()->back()->withErrors($validator)->withInput();
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        User::create([
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'phone'     => $request->phone,
+            'password'  => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('login')->with('success', 'Akun berhasil dibuat!');
     }
-
-    User::create([
-        'name'      => $request->name,
-        'email'     => $request->email,
-        'phone'     => $request->phone,
-        'password'  => Hash::make($request->password),
-    ]);
-
-    return redirect()->route('login')->with('success', 'Akun berhasil dibuat!');
-}
 
     // ================================
     //  LOGOUT
@@ -122,6 +122,13 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email tidak ditemukan.',
+                ], 404);
+            }
+
             return back()->with('error', 'Email tidak ditemukan.');
         }
 
@@ -129,12 +136,63 @@ class AuthController extends Controller
 
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $user->email],
-            ['token' => $token, 'created_at' => now()]
+            [
+                'token' => $token,
+                'created_at' => now(),
+            ]
         );
 
-        // Untuk sementara tanpa email, langsung ke halaman reset
-        return redirect()->route('password.reset', $token)
-            ->with('success', 'Silakan buat password baru.');
+        $resetLink = 'ingoncare://reset-password?email=' . urlencode($user->email) . '&token=' . $token;
+
+        Mail::send([], [], function ($message) use ($user, $resetLink) {
+            $message->to($user->email)
+                ->subject('Reset Password IngonCare')
+                ->html('
+                    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                        <h2>Reset Password IngonCare</h2>
+
+                        <p>Halo,</p>
+
+                        <p>Kami menerima permintaan untuk reset password akun IngonCare Anda.</p>
+
+                        <p>Klik tombol di bawah ini untuk membuat password baru:</p>
+
+                        <p style="margin: 24px 0;">
+                            <a href="' . $resetLink . '"
+                               style="
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    padding: 12px 20px;
+                                    text-decoration: none;
+                                    border-radius: 8px;
+                                    display: inline-block;
+                                    font-weight: bold;
+                               ">
+                                Reset Password
+                            </a>
+                        </p>
+
+                        <p>Jika tombol tidak bisa diklik, salin link berikut:</p>
+
+                        <p style="word-break: break-all;">
+                            ' . $resetLink . '
+                        </p>
+
+                        <p>Jika Anda tidak meminta reset password, abaikan email ini.</p>
+
+                        <p>Terima kasih,<br>IngonCare</p>
+                    </div>
+                ');
+        });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Link reset password berhasil dikirim ke email.',
+            ]);
+        }
+
+        return back()->with('success', 'Link reset password berhasil dikirim ke email.');
     }
 
     // ================================
@@ -148,6 +206,8 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
+            'token' => 'required',
+            'email' => 'nullable|email',
             'password' => [
                 'required',
                 'min:8',
@@ -158,27 +218,63 @@ class AuthController extends Controller
             ]
         ], [
             'password.min'       => 'Password minimal 8 karakter.',
-            'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter.',
+            'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
             'password.confirmed' => 'Password dan Confirm Password tidak sama!',
         ]);
 
-        $reset = DB::table('password_reset_tokens')
-            ->where('token', $request->token)
-            ->first();
+        $resetQuery = DB::table('password_reset_tokens')
+            ->where('token', $request->token);
+
+        if ($request->email) {
+            $resetQuery->where('email', $request->email);
+        }
+
+        $reset = $resetQuery->first();
 
         if (!$reset) {
-            return back()->with('error', 'Token tidak valid.');
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token reset tidak valid atau sudah kedaluwarsa.',
+                ], 400);
+            }
+
+            return back()->with('error', 'Token tidak valid atau sudah kedaluwarsa.');
         }
 
         $user = User::where('email', $reset->email)->first();
 
+        if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User tidak ditemukan.',
+                ], 404);
+            }
+
+            return back()->with('error', 'User tidak ditemukan.');
+        }
+
         $user->password = Hash::make($request->password);
         $user->save();
 
-        DB::table('password_reset_tokens')->where('email', $reset->email)->delete();
+        DB::table('password_reset_tokens')
+            ->where('email', $reset->email)
+            ->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Password berhasil diperbarui.',
+            ]);
+        }
 
         return redirect()->route('login')->with('success', 'Password berhasil diperbarui.');
     }
+
+    // ================================
+    //  OTP
+    // ================================
     public function showVerifyOtp()
     {
         return view('auth.verify-otp');
@@ -217,24 +313,22 @@ class AuthController extends Controller
     }
 
     public function resendOtp(Request $request)
-{
-    $user = User::find(session('otp_user_id'));
+    {
+        $user = User::find(session('otp_user_id'));
 
-    if (!$user) {
-        return redirect()->route('login')
-            ->with('error', 'Session OTP tidak ditemukan.');
+        if (!$user) {
+            return redirect()->route('login')
+                ->with('error', 'Session OTP tidak ditemukan.');
+        }
+
+        $otp = rand(100000, 999999);
+
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addMinutes(5);
+        $user->save();
+
+        Mail::to($user->email)->send(new SendOtpMail($otp));
+
+        return back()->with('success', 'OTP berhasil dikirim ulang.');
     }
-
-    // generate OTP baru
-    $otp = rand(100000, 999999);
-
-    $user->otp = $otp;
-    $user->otp_expires_at = now()->addMinutes(5);
-    $user->save();
-
-    // kirim ulang email OTP
-    Mail::to($user->email)->send(new SendOtpMail($otp));
-
-    return back()->with('success', 'OTP berhasil dikirim ulang.');
-}
 }
