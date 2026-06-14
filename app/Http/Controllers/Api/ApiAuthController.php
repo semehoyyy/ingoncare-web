@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Password;
 use App\Models\User;
 use App\Mail\SendOtpMail;
+
 
 class ApiAuthController extends Controller
 {
@@ -229,36 +231,25 @@ class ApiAuthController extends Controller
      */
     public function forgotPassword(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+    $request->validate([
+        'email' => 'required|email'
+    ]);
 
-        $user = User::where('email', $request->email)->first();
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email tidak ditemukan.',
-            ], 404);
-        }
-
-        // Generate reset OTP
-        $otp = rand(100000, 999999);
-        $user->otp = $otp;
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->save();
-
-        try {
-            Mail::to($user->email)->send(new SendOtpMail($otp));
-        } catch (\Exception $e) {
-            // silent
-        }
-
+    if ($status === Password::RESET_LINK_SENT) {
         return response()->json([
             'success' => true,
-            'message' => 'Kode reset password telah dikirim ke email.',
-            'user_id' => $user->id,
+            'message' => 'Link reset kata sandi telah dikirim ke email Anda.',
         ]);
+    }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'Email tidak ditemukan atau tidak terdaftar.',
+    ], 404);
     }
 
     /**

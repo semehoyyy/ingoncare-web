@@ -19,16 +19,21 @@ class User extends Authenticatable
         'password',
         'profile_photo',
         'address',
+        'otp',
+        'otp_expires_at',
+
     ];
 
     protected $hidden = [
         'password', 
         'remember_token',
+        'otp',
     ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'otp_expires_at' => 'datetime',
     ];
 
     public function comments()

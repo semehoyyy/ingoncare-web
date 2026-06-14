@@ -8,7 +8,9 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\Http\\Controllers\\Api\\ApiAuthController' => $baseDir . '/app/Http/Controllers/Api/ApiAuthController.php',
     'App\\Http\\Controllers\\Api\\ApiChatbotController' => $baseDir . '/app/Http/Controllers/Api/ApiChatbotController.php',
+    'App\\Http\\Controllers\\Api\\ApiFollowController' => $baseDir . '/app/Http/Controllers/Api/ApiFollowController.php',
     'App\\Http\\Controllers\\Api\\ApiForumController' => $baseDir . '/app/Http/Controllers/Api/ApiForumController.php',
+    'App\\Http\\Controllers\\Api\\ApiNotificationController' => $baseDir . '/app/Http/Controllers/Api/ApiNotificationController.php',
     'App\\Http\\Controllers\\Api\\ApiPengingatController' => $baseDir . '/app/Http/Controllers/Api/ApiPengingatController.php',
     'App\\Http\\Controllers\\Api\\ApiPetController' => $baseDir . '/app/Http/Controllers/Api/ApiPetController.php',
     'App\\Http\\Controllers\\Api\\ApiProfileController' => $baseDir . '/app/Http/Controllers/Api/ApiProfileController.php',
@@ -30,6 +32,7 @@ return array(
     'App\\Mail\\SendOtpMail' => $baseDir . '/app/Mail/SendOtpMail.php',
     'App\\Models\\ChatbotHistory' => $baseDir . '/app/Models/ChatbotHistory.php',
     'App\\Models\\Comment' => $baseDir . '/app/Models/Comment.php',
+    'App\\Models\\Follow' => $baseDir . '/app/Models/Follow.php',
     'App\\Models\\Notification' => $baseDir . '/app/Models/Notification.php',
     'App\\Models\\Pengingat' => $baseDir . '/app/Models/Pengingat.php',
     'App\\Models\\Pet' => $baseDir . '/app/Models/Pet.php',
