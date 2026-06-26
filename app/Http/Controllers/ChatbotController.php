@@ -193,7 +193,6 @@ class ChatbotController extends Controller
             - Boleh gunakan angka (1. 2. 3.) atau strip (-) untuk daftar jika diperlukan.
             - Pisah paragraf dengan baris kosong." . $petsContext;
 
-        // Tambahkan system prompt sebagai pesan pertama jika belum ada
 
 
         try {

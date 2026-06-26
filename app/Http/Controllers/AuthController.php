@@ -38,6 +38,7 @@ class AuthController extends Controller
             $otp = rand(100000, 999999);
 
             $user->otp = $otp;
+            //atur waktu kadaluarsa OTP, misalnya 5 menit dari sekarang
             $user->otp_expires_at = now()->addMinutes(5);
             $user->save();
 
