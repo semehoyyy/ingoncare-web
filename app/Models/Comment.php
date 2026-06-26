@@ -12,13 +12,14 @@ class Comment extends Model
     protected $fillable = [
         'user_id',
         'content',
-        'title',        // Judul post
-        'image',        // Path gambar
-        'parent_id'
+        'title',
+        'image',
+        'parent_id',
+        'reply_to_id',
     ];
 
     /**
-     * User yang membuat komentar/post
+     * Pembuat post/comment
      */
     public function user(): BelongsTo
     {
@@ -26,35 +27,34 @@ class Comment extends Model
     }
 
     /**
-     * Alias author (optional)
-     */
-    public function author(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * Relasi likes untuk komentar atau post
-     * Pivot table: comment_user_likes
+     * Relasi Like (Many-to-Many via Pivot)
      */
     public function likes(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'comment_user_likes', 'comment_id', 'user_id')
-                    ->withTimestamps();
+        return $this->belongsToMany(
+            User::class,
+            'comment_user_likes',
+            'comment_id',
+            'user_id'
+        )->withTimestamps();
     }
 
     /**
-     * Balasan komentar (NESTED RECURSIVE)
+     * Semua reply pada comment ini
      */
     public function replies(): HasMany
     {
         return $this->hasMany(Comment::class, 'parent_id')
-                    ->with(['user', 'likes', 'replies']) // Load nested replies recursively
-                    ->orderBy('created_at', 'asc');
+            ->with([
+                'user',
+                'likes',
+                'replyTo.user',
+            ])
+            ->orderBy('created_at');
     }
 
     /**
-     * Parent comment
+     * Parent thread
      */
     public function parent(): BelongsTo
     {
@@ -62,16 +62,10 @@ class Comment extends Model
     }
 
     /**
-     * Count all nested replies recursively
+     * Reply ditujukan ke comment mana
      */
-    public function getTotalRepliesCountAttribute()
+    public function replyTo(): BelongsTo
     {
-        $count = $this->replies->count();
-        
-        foreach ($this->replies as $reply) {
-            $count += $reply->total_replies_count;
-        }
-        
-        return $count;
+        return $this->belongsTo(Comment::class, 'reply_to_id');
     }
 }

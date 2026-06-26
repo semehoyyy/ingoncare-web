@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Follow;
 use App\Models\Comment;
+use App\Models\Notification;
 
 class ApiFollowController extends Controller
 {
@@ -42,6 +43,19 @@ class ApiFollowController extends Controller
         Follow::create([
             'follower_id'  => $user->id,
             'following_id' => $target->id,
+        ]);
+
+        // =========================
+        // Tambahkan notifikasi follow
+        // =========================
+        Notification::create([
+            'user_id'   => $target->id,
+            'type'      => 'follow',
+            'title'     => 'Pengikut Baru',
+            'message'   => $user->name . ' mulai mengikuti Anda.',
+            'link'      => '/profile/' . $user->id,
+            'notify_at' => now(),
+            'is_read'   => false,
         ]);
 
         return response()->json([
@@ -84,18 +98,20 @@ class ApiFollowController extends Controller
     {
         $user = User::find($userId) ?? $request->user();
 
-        $followers = $user->followers()->select('users.id', 'users.name', 'users.email', 'users.profile_photo')->get();
+        $followers = $user->followers()
+            ->select('users.id', 'users.name', 'users.email', 'users.profile_photo')
+            ->get();
 
         return response()->json([
             'success'   => true,
             'followers' => $followers->map(function ($f) use ($request) {
                 return [
-                    'id'             => $f->id,
-                    'name'           => $f->name,
-                    'email'          => $f->email,
-                    'profile_photo'  => $f->profile_photo ? asset('storage/' . $f->profile_photo) : null,
-                    'is_followed'    => $request->user()->isFollowing($f),
-                    'is_self'        => $request->user()->id === $f->id,
+                    'id'            => $f->id,
+                    'name'          => $f->name,
+                    'email'         => $f->email,
+                    'profile_photo' => $f->profile_photo ? asset('storage/' . $f->profile_photo) : null,
+                    'is_followed'   => $request->user()->isFollowing($f),
+                    'is_self'       => $request->user()->id === $f->id,
                 ];
             }),
             'total' => $followers->count(),
@@ -109,18 +125,20 @@ class ApiFollowController extends Controller
     {
         $user = User::find($userId) ?? $request->user();
 
-        $following = $user->following()->select('users.id', 'users.name', 'users.email', 'users.profile_photo')->get();
+        $following = $user->following()
+            ->select('users.id', 'users.name', 'users.email', 'users.profile_photo')
+            ->get();
 
         return response()->json([
             'success'   => true,
             'following' => $following->map(function ($f) use ($request) {
                 return [
-                    'id'             => $f->id,
-                    'name'           => $f->name,
-                    'email'          => $f->email,
-                    'profile_photo'  => $f->profile_photo ? asset('storage/' . $f->profile_photo) : null,
-                    'is_followed'    => $request->user()->isFollowing($f),
-                    'is_self'        => $request->user()->id === $f->id,
+                    'id'            => $f->id,
+                    'name'          => $f->name,
+                    'email'         => $f->email,
+                    'profile_photo' => $f->profile_photo ? asset('storage/' . $f->profile_photo) : null,
+                    'is_followed'   => $request->user()->isFollowing($f),
+                    'is_self'       => $request->user()->id === $f->id,
                 ];
             }),
             'total' => $following->count(),
@@ -154,9 +172,11 @@ class ApiFollowController extends Controller
                     'image'         => $post->image ? asset('storage/' . $post->image) : null,
                     'likes_count'   => $post->likes->count(),
                     'replies_count' => $post->replies->count(),
-                    'is_liked'      => $request->user() ? $post->likes->contains('id', $request->user()->id) : false,
-                    'created_at'    => $post->created_at,
-                    'time_ago'      => $post->created_at->diffForHumans(),
+                    'is_liked'      => $request->user()
+                        ? $post->likes->contains('id', $request->user()->id)
+                        : false,
+                    'created_at' => $post->created_at,
+                    'time_ago'   => $post->created_at->diffForHumans(),
                 ];
             });
 
@@ -179,7 +199,7 @@ class ApiFollowController extends Controller
     }
 
     /**
-     * Search users (untuk cari orang buat di-follow)
+     * Search users
      */
     public function searchUsers(Request $request)
     {
@@ -188,7 +208,7 @@ class ApiFollowController extends Controller
         if (strlen($query) < 2) {
             return response()->json([
                 'success' => true,
-                'users'   => [],
+                'users' => [],
             ]);
         }
 
@@ -202,7 +222,7 @@ class ApiFollowController extends Controller
 
         return response()->json([
             'success' => true,
-            'users'   => $users->map(function ($user) use ($request) {
+            'users' => $users->map(function ($user) use ($request) {
                 return [
                     'id'              => $user->id,
                     'name'            => $user->name,
