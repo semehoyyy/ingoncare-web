@@ -260,13 +260,9 @@ class ApiAuthController extends Controller
                     ->html('
                         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                             <h2>Reset Password IngonCare</h2>
-
                             <p>Halo,</p>
-
                             <p>Kami menerima permintaan untuk reset password akun IngonCare Anda.</p>
-
                             <p>Klik tombol di bawah ini untuk membuat password baru:</p>
-
                             <p style="margin: 24px 0;">
                                 <a href="' . $resetLink . '"
                                    style="
@@ -281,15 +277,11 @@ class ApiAuthController extends Controller
                                     Reset Password
                                 </a>
                             </p>
-
                             <p>Jika tombol tidak bisa diklik, salin link berikut:</p>
-
                             <p style="word-break: break-all;">
                                 ' . $resetLink . '
                             </p>
-
                             <p>Jika Anda tidak meminta reset password, abaikan email ini.</p>
-
                             <p>Terima kasih,<br>IngonCare</p>
                         </div>
                     ');
@@ -446,5 +438,41 @@ class ApiAuthController extends Controller
                 'profile_photo' => $user->profile_photo,
             ],
         ]);
+    }
+
+    /**
+     * ✅ TAMBAHAN: Update FCM Token untuk Push Notification Flutter
+     */
+    public function updateFcmToken(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'fcm_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi token gagal.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if ($user) {
+            $user->update([
+                'fcm_token' => $request->fcm_token
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'FCM Token berhasil diperbarui.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'User tidak terautentikasi.',
+        ], 401);
     }
 }

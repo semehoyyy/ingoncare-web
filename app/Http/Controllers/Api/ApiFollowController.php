@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Follow;
 use App\Models\Comment;
 use App\Models\Notification;
+use App\Services\FcmService;
 
 class ApiFollowController extends Controller
 {
@@ -45,9 +46,7 @@ class ApiFollowController extends Controller
             'following_id' => $target->id,
         ]);
 
-        // =========================
-        // Tambahkan notifikasi follow
-        // =========================
+        // ✅ Notifikasi follow
         Notification::create([
             'user_id'   => $target->id,
             'type'      => 'follow',
@@ -57,6 +56,14 @@ class ApiFollowController extends Controller
             'notify_at' => now(),
             'is_read'   => false,
         ]);
+
+        // ✅ Kirim push notif ke HP
+        FcmService::sendToUser(
+            $target,
+            'Pengikut Baru',
+            $user->name . ' mulai mengikuti Anda.',
+            ['link' => '/profile/' . $user->id]
+        );
 
         return response()->json([
             'success'         => true,
@@ -146,7 +153,7 @@ class ApiFollowController extends Controller
     }
 
     /**
-     * Profil user lain (+ postingannya)
+     * Profil user lain
      */
     public function userProfile(Request $request, $userId)
     {

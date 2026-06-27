@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Notification;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Services\FcmService;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
@@ -49,7 +50,6 @@ class ApiForumController extends Controller
                     'title' => $post->title,
                     'content' => $post->content,
                     'image' => $post->image ? asset('storage/' . $post->image) : null,
-
                     'user' => [
                         'id' => $post->user->id,
                         'name' => $post->user->name,
@@ -57,18 +57,14 @@ class ApiForumController extends Controller
                             ? asset('storage/' . $post->user->profile_photo)
                             : null,
                     ],
-
                     'likes_count' => $post->likes->count(),
                     'replies_count' => $post->replies->count(),
-
                     'is_liked' => $request->user()
                         ? $post->likes->contains('user_id', $request->user()->id)
                         : false,
-
                     'is_own' => $request->user()
                         ? $post->user_id === $request->user()->id
                         : false,
-
                     'created_at' => $post->created_at,
                     'time_ago' => $post->created_at->diffForHumans(),
                 ];
@@ -86,7 +82,7 @@ class ApiForumController extends Controller
             'likes',
             'replies.user',
             'replies.likes',
-            'replies.replyTo.user' 
+            'replies.replyTo.user'
         ])->findOrFail($id);
 
         return response()->json([
@@ -96,7 +92,6 @@ class ApiForumController extends Controller
                 'title' => $post->title,
                 'content' => $post->content,
                 'image' => $post->image ? asset('storage/' . $post->image) : null,
-
                 'user' => [
                     'id' => $post->user->id,
                     'name' => $post->user->name,
@@ -104,15 +99,11 @@ class ApiForumController extends Controller
                         ? asset('storage/' . $post->user->profile_photo)
                         : null,
                 ],
-
                 'likes_count' => $post->likes->count(),
-
                 'is_liked' => $request->user()
                     ? $post->likes->contains('user_id', $request->user()->id)
                     : false,
-
                 'time_ago' => $post->created_at->diffForHumans(),
-
                 'replies' => $this->buildReplies($post->replies, $request->user()),
             ]
         ]);
@@ -128,10 +119,8 @@ class ApiForumController extends Controller
                 'id' => $reply->id,
                 'content' => $reply->content,
                 'image' => $reply->image ? asset('storage/' . $reply->image) : null,
-
                 'reply_to_id' => $reply->reply_to_id,
-                'mention' => $reply->replyTo?->user?->name, // Mengambil data nama yang di-reply
-
+                'mention' => $reply->replyTo?->user?->name,
                 'user' => [
                     'id' => $reply->user->id,
                     'name' => $reply->user->name,
@@ -139,36 +128,27 @@ class ApiForumController extends Controller
                         ? asset('storage/' . $reply->user->profile_photo)
                         : null,
                 ],
-
                 'likes_count' => $reply->likes->count(),
-
                 'is_liked' => $currentUser
                     ? $reply->likes->contains('user_id', $currentUser->id)
                     : false,
-
                 'time_ago' => $reply->created_at->diffForHumans(),
-
                 'replies' => $this->buildReplies($reply->replies, $currentUser),
             ];
         });
     }
 
     /**
-     * CREATE COMMENT / REPLY VIA API
-     */
-    /**
-     * CREATE COMMENT / REPLY (Sistem Instagram)
+     * CREATE COMMENT / REPLY
      */
     public function store(Request $request)
     {
         $request->validate([
             'content' => 'required|string|max:1000',
-            'parent_id' => 'required|exists:comments,id', // ID Postingan Utama / Root Utama
-            'reply_to_id' => 'nullable|exists:comments,id', // ID Komentar spesifik yang sedang dibalas
+            'parent_id' => 'required|exists:comments,id',
+            'reply_to_id' => 'nullable|exists:comments,id',
         ]);
 
-        // Jika dia membalas sebuah komentar (bukan post utama), 
-        // pastikan parent_id nya disamakan dengan milik komentar tersebut agar tetap dalam 1 thread diskusi
         $parentId = $request->parent_id;
         if ($request->reply_to_id) {
             $commentYangDibalas = Comment::find($request->reply_to_id);
@@ -183,11 +163,33 @@ class ApiForumController extends Controller
             'user_id' => $request->user()->id,
             'content' => $request->content,
             'parent_id' => $parentId,
-            'reply_to_id' => $request->reply_to_id, // Menyimpan referensi siapa yang dibalas
+            'reply_to_id' => $request->reply_to_id,
         ]);
 
-        // Load relasi agar response langsung lengkap
         $comment->load(['user', 'replyTo.user']);
+
+        // ✅ Notifikasi komentar/balasan
+        $parent = Comment::find($parentId);
+        if ($parent && $parent->user_id !== $request->user()->id) {
+            $owner = User::find($parent->user_id);
+
+            Notification::create([
+                'user_id' => $owner->id,
+                'type'    => 'comment',
+                'title'   => 'Komentar Baru',
+                'message' => $request->user()->name . ' mengomentari postingan Anda',
+                'link'    => '/forum/' . $parent->id,
+                'is_read' => false,
+            ]);
+
+            // ✅ Kirim push notif ke HP
+            FcmService::sendToUser(
+                $owner,
+                'Komentar Baru',
+                $request->user()->name . ' mengomentari postingan Anda',
+                ['link' => '/forum/' . $parent->id]
+            );
+        }
 
         return response()->json([
             'success' => true,
@@ -207,8 +209,9 @@ class ApiForumController extends Controller
             ],
         ], 201);
     }
+
     /**
-     * LIKE / UNLIKE VIA API (Fix Menggunakan Toggle BelongsToMany)
+     * LIKE / UNLIKE
      */
     public function like(Request $request, $id)
     {
@@ -221,6 +224,33 @@ class ApiForumController extends Controller
 
         $result = $comment->likes()->toggle($user->id);
         $isLiked = count($result['attached']) > 0;
+
+        // ✅ Notifikasi & push notif saat like
+        if ($isLiked && $comment->user_id !== $user->id) {
+            $owner = User::find($comment->user_id);
+
+            if ($owner) {
+                // Tentukan link ke forum utama
+                $linkId = $comment->parent_id ?? $comment->id;
+
+                Notification::create([
+                    'user_id' => $owner->id,
+                    'type'    => 'like',
+                    'title'   => 'Like Baru',
+                    'message' => $user->name . ' menyukai postingan Anda',
+                    'link'    => '/forum/' . $linkId,
+                    'is_read' => false,
+                ]);
+
+                // ✅ Kirim push notif ke HP
+                FcmService::sendToUser(
+                    $owner,
+                    'Like Baru',
+                    $user->name . ' menyukai postingan Anda',
+                    ['link' => '/forum/' . $linkId]
+                );
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -246,7 +276,7 @@ class ApiForumController extends Controller
     }
 
     /**
-     * DESTROY (API DELETE)
+     * DESTROY
      */
     public function destroy(Request $request, $id)
     {

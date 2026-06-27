@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\ApiAuthController; // ✅ TAMBAHAN: Import ApiAuthController
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForumController;
@@ -50,7 +51,7 @@ Route::get('/resend-otp', [AuthController::class, 'resendOtp'])
     ->name('resend.otp');
 
 // ==========================================
-// HOME/DASHBOARD
+// HOME/DASHBOARD (PROTECTED ROUTES)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
 
@@ -68,6 +69,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])
         ->name('comments.store');
 
+    // ==========================================
+    // FCM TOKEN UPDATE (TAMBAHAN UNTUK FLUTTER)
+    // ==========================================
+    Route::post('/update-fcm-token', [ApiAuthController::class, 'updateFcmToken']); // ✅ SUDAH DIUBAH KE ApiAuthController
+
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])
         ->name('comments.like');
 
@@ -80,6 +86,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/hewan-saya', [PetController::class, 'index'])
         ->name('hewan-saya');
 
+    // ==========================================
+    // NOTIFICATIONS
+    // ==========================================
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);
+
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+
+    Route::delete('/notifications', [NotificationController::class, 'deleteAll']);
+
+    // ==========================================
+    // PETS / HEWAN (LANJUTAN)
+    // ==========================================
     Route::get('/pets/create', [PetController::class, 'create'])
         ->name('pets.create');
 
@@ -174,20 +197,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('settings.account.update');
 
     // ==========================================
-    // NOTIFICATIONS
-    // ==========================================
-    Route::get('/notifications', [NotificationController::class, 'index'])
-        ->name('notifications.index');
-
-    Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);
-
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
-
-    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
-
-    Route::delete('/notifications', [NotificationController::class, 'deleteAll']);
-
-    // ==========================================
     // PROFILE
     // ==========================================
     Route::get('/profil', [ProfileController::class, 'index'])
@@ -223,8 +232,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/chatbot/new', [ChatbotController::class, 'newSession'])
         ->name('chatbot.new-session');
+
     Route::delete('/chatbot/session/{sessionId}', [ChatbotController::class, 'deleteSession'])->name('chatbot.delete-session');
-Route::post('/chatbot/session/{sessionId}/pin', [ChatbotController::class, 'pinSession'])->name('chatbot.pin-session');
+    Route::post('/chatbot/session/{sessionId}/pin', [ChatbotController::class, 'pinSession'])->name('chatbot.pin-session');
 });
 
 // ==========================================

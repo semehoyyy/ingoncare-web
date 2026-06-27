@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\ApiRiwayatController;
 use App\Http\Controllers\Api\ApiProfileController;
 use App\Http\Controllers\Api\ApiChatbotController;
 use App\Http\Controllers\Api\ApiForumController;
-
 use App\Http\Controllers\Api\ApiFollowController;
 use App\Http\Controllers\Api\ApiNotificationController;
 
@@ -50,6 +49,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [ApiAuthController::class, 'logout']);
     Route::get('/me', [ApiAuthController::class, 'me']);
 
+    // ✅ FCM Token
+    Route::post('/update-fcm-token', [ApiAuthController::class, 'updateFcmToken']);
+
     // --- Profile ---
     Route::get('/profile', [ApiProfileController::class, 'index']);
     Route::post('/profile', [ApiProfileController::class, 'update']);
@@ -60,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pets', [ApiPetController::class, 'index']);
     Route::get('/pets/{id}', [ApiPetController::class, 'show']);
     Route::post('/pets', [ApiPetController::class, 'store']);
-    Route::post('/pets/{id}', [ApiPetController::class, 'update']); // POST karena multipart/form-data
+    Route::post('/pets/{id}', [ApiPetController::class, 'update']);
     Route::delete('/pets/{id}', [ApiPetController::class, 'destroy']);
 
     // --- Pengingat ---

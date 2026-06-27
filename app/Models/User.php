@@ -21,6 +21,7 @@ class User extends Authenticatable
         'address',
         'otp',
         'otp_expires_at',
+        'fcm_token',
 
     ];
 
